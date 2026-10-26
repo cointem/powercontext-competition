@@ -186,6 +186,17 @@ SOURCE_JOURNAL_HEADS_TABLE = Table(
     CheckConstraint("position >= 0", name="ck_pc_source_journal_heads_position_nonnegative"),
 )
 
+SOURCE_LIFECYCLE_NODES_TABLE = Table(
+    "pc_source_lifecycle_nodes",
+    SHARED_METADATA,
+    Column("scope_id", identity_string(MAX_SCOPE_ID_LENGTH), primary_key=True),
+    Column("node_id", identity_string(MAX_SOURCE_ID_LENGTH), primary_key=True),
+    Column("kind", String(16), nullable=False),
+    Column("reference_id", identity_string(MAX_SOURCE_ID_LENGTH), nullable=False),
+    Column("available", Boolean, nullable=False),
+    Column("payload", _canonical_payload_type(), nullable=False),
+)
+
 ARTIFACTS_TABLE = Table(
     "pc_artifacts",
     SHARED_METADATA,
@@ -897,6 +908,7 @@ RECALL_TOKEN_DAILY_TABLE = Table(
 
 SHARED_TABLES = (
     SOURCE_JOURNAL_HEADS_TABLE,
+    SOURCE_LIFECYCLE_NODES_TABLE,
     SOURCES_TABLE,
     ARTIFACTS_TABLE,
     ARTIFACT_HEADS_TABLE,

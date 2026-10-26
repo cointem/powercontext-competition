@@ -487,6 +487,24 @@ class TopicMemoryRepository:
             admission=admission,
         )
         channels = await self.index.search(connection, scope_id, request)
+        from powercontext.builtin.persistence.tables import SOURCE_LIFECYCLE_NODES_TABLE
+
+        blocked = set(
+            await connection.scalars(
+                select(SOURCE_LIFECYCLE_NODES_TABLE.c.reference_id).where(
+                    SOURCE_LIFECYCLE_NODES_TABLE.c.scope_id == scope_id,
+                    SOURCE_LIFECYCLE_NODES_TABLE.c.kind == "topic",
+                    SOURCE_LIFECYCLE_NODES_TABLE.c.available.is_(False),
+                )
+            )
+        )
+        if blocked:
+            channels = channels.model_copy(
+                update={
+                    name: tuple(hit for hit in getattr(channels, name) if hit.artifact_ref.artifact_id not in blocked)
+                    for name in ("topic_fts", "topic_vector", "detail_fts", "detail_vector")
+                }
+            )
         await self._check_retrieval_shape(connection)
         outcome = _fuse_topic_memory_rankings(query, channels, limit, mode=used_mode, admission=admission)
         return TopicMemorySearchResult(

@@ -37,6 +37,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
+pdf = ["pypdf==6.19.0"]
 code = [
     "tree-sitter==0.26.0",
     "tree-sitter-go==0.25.0",
