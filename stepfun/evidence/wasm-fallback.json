@@ -1,0 +1,1547 @@
+{
+  "kind": "browser-benchmark",
+  "at": "2026-10-26T11:36:20.754Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+  "hardwareConcurrency": 10,
+  "gpuAvailable": false,
+  "backendProbe": {
+    "backend": "wasm",
+    "dtype": "q8",
+    "reason": "WebGPU 不可用",
+    "threads": 1,
+    "loadMs": 1665.5,
+    "reused": false,
+    "resources": [
+      {
+        "url": "http://127.0.0.1.nip.io:15174/models/Xenova/all-MiniLM-L6-v2/tokenizer.json",
+        "durationMs": 24.799999952316284,
+        "transferBytes": 711961,
+        "decodedBytes": 711661
+      },
+      {
+        "url": "http://127.0.0.1.nip.io:15174/models/Xenova/all-MiniLM-L6-v2/tokenizer_config.json",
+        "durationMs": 20.09999990463257,
+        "transferBytes": 666,
+        "decodedBytes": 366
+      },
+      {
+        "url": "http://127.0.0.1.nip.io:15174/models/Xenova/all-MiniLM-L6-v2/config.json",
+        "durationMs": 18.700000047683716,
+        "transferBytes": 950,
+        "decodedBytes": 650
+      },
+      {
+        "url": "http://127.0.0.1.nip.io:15174/models/Xenova/all-MiniLM-L6-v2/onnx/model_quantized.onnx",
+        "durationMs": 103.19999980926514,
+        "transferBytes": 22972670,
+        "decodedBytes": 22972370
+      }
+    ]
+  },
+  "manifest": {
+    "model": "Xenova/all-MiniLM-L6-v2",
+    "revision": "751bff37182d3f1213fa05d7196b954e230abad9",
+    "files": [
+      {
+        "file": "config.json",
+        "bytes": 650,
+        "sha256": "7135149f7cffa1a573466c6e4d8423ed73b62fd2332c575bf738a0d033f70df7"
+      },
+      {
+        "file": "tokenizer.json",
+        "bytes": 711661,
+        "sha256": "da0e79933b9ed51798a3ae27893d3c5fa4a201126cef75586296df9b4d2c62a0"
+      },
+      {
+        "file": "tokenizer_config.json",
+        "bytes": 366,
+        "sha256": "9261e7d79b44c8195c1cada2b453e55b00aeb81e907a6664974b4d7776172ab3"
+      },
+      {
+        "file": "special_tokens_map.json",
+        "bytes": 125,
+        "sha256": "b6d346be366a7d1d48332dbc9fdf3bf8960b5d879522b7799ddba59e76237ee3"
+      },
+      {
+        "file": "onnx/model.onnx",
+        "bytes": 90387606,
+        "sha256": "759c3cd2b7fe7e93933ad23c4c9181b7396442a2ed746ec7c1d46192c469c46e"
+      },
+      {
+        "file": "onnx/model_fp16.onnx",
+        "bytes": 45297825,
+        "sha256": "2cdb5e58291813b6d6e248ed69010100246821a367fa17b1b81ae9483744533d"
+      },
+      {
+        "file": "onnx/model_quantized.onnx",
+        "bytes": 22972370,
+        "sha256": "afdb6f1a0e45b715d0bb9b11772f032c399babd23bfc31fed1c170afc848bdb1"
+      }
+    ]
+  },
+  "dataset": {
+    "documents": 32,
+    "queries": 12,
+    "version": "evaluation-v1",
+    "k": 5,
+    "repeats": 3
+  },
+  "runs": [
+    {
+      "config": {
+        "backend": "wasm",
+        "dtype": "fp32",
+        "reason": "已选择 WASM 兼容模式",
+        "threads": 1,
+        "loadMs": 1170.7000000476837,
+        "reused": false,
+        "resources": [
+          {
+            "url": "http://127.0.0.1.nip.io:15174/models/Xenova/all-MiniLM-L6-v2/tokenizer.json",
+            "durationMs": 29.40000009536743,
+            "transferBytes": 300,
+            "decodedBytes": 711661
+          },
+          {
+            "url": "http://127.0.0.1.nip.io:15174/models/Xenova/all-MiniLM-L6-v2/tokenizer_config.json",
+            "durationMs": 18.90000009536743,
+            "transferBytes": 300,
+            "decodedBytes": 366
+          },
+          {
+            "url": "http://127.0.0.1.nip.io:15174/models/Xenova/all-MiniLM-L6-v2/config.json",
+            "durationMs": 21.09999990463257,
+            "transferBytes": 300,
+            "decodedBytes": 650
+          },
+          {
+            "url": "http://127.0.0.1.nip.io:15174/models/Xenova/all-MiniLM-L6-v2/onnx/model.onnx",
+            "durationMs": 665.3000001907349,
+            "transferBytes": 90387906,
+            "decodedBytes": 90387606
+          }
+        ]
+      },
+      "loadMs": 1170.7000000476837,
+      "batch": [
+        {
+          "repeat": 0,
+          "batchSize": 1,
+          "ms": 605,
+          "documentsPerSecond": 52.892561983471076
+        },
+        {
+          "repeat": 0,
+          "batchSize": 8,
+          "ms": 588.2000000476837,
+          "documentsPerSecond": 54.40326419144143
+        },
+        {
+          "repeat": 1,
+          "batchSize": 8,
+          "ms": 553.5999999046326,
+          "documentsPerSecond": 57.803468218050156
+        },
+        {
+          "repeat": 1,
+          "batchSize": 1,
+          "ms": 516.7999999523163,
+          "documentsPerSecond": 61.91950464967599
+        },
+        {
+          "repeat": 2,
+          "batchSize": 1,
+          "ms": 519.9000000953674,
+          "documentsPerSecond": 61.55029812296616
+        },
+        {
+          "repeat": 2,
+          "batchSize": 8,
+          "ms": 550.5,
+          "documentsPerSecond": 58.12897366030881
+        }
+      ],
+      "queries": [
+        {
+          "repeat": 0,
+          "query": "How can my roof generate electricity from sunshine?",
+          "ids": [
+            "solar",
+            "wind",
+            "battery",
+            "heat",
+            "train"
+          ],
+          "embeddingMs": 14,
+          "dbMs": 14.519292000011774,
+          "e2eMs": 57.799999952316284,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 0,
+          "query": "How do I keep solar energy available after sunset?",
+          "ids": [
+            "solar",
+            "battery",
+            "backup",
+            "passport",
+            "sleep"
+          ],
+          "embeddingMs": 9.099999904632568,
+          "dbMs": 7.4528750000172295,
+          "e2eMs": 34.700000047683716,
+          "recall": 1,
+          "ndcg": 0.6309297535714575
+        },
+        {
+          "repeat": 0,
+          "query": "What travel option connects downtown areas without airport queues?",
+          "ids": [
+            "train",
+            "passport",
+            "bike",
+            "encryption",
+            "flight"
+          ],
+          "embeddingMs": 11.199999809265137,
+          "dbMs": 9.177374999999302,
+          "e2eMs": 33.299999952316284,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 0,
+          "query": "What makes a dough expand before it is baked?",
+          "ids": [
+            "bread",
+            "flight",
+            "passport",
+            "rain",
+            "rice"
+          ],
+          "embeddingMs": 9.200000047683716,
+          "dbMs": 11.998875000019325,
+          "e2eMs": 33.39999985694885,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 0,
+          "query": "How do I check whether saved copies of my files can be recovered?",
+          "ids": [
+            "backup",
+            "encryption",
+            "passport",
+            "testing",
+            "train"
+          ],
+          "embeddingMs": 12.200000047683716,
+          "dbMs": 58.560458000021754,
+          "e2eMs": 84.60000014305115,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 0,
+          "query": "How can I recognize a message trying to steal my login?",
+          "ids": [
+            "phishing",
+            "train",
+            "password",
+            "encryption",
+            "bread"
+          ],
+          "embeddingMs": 13.699999809265137,
+          "dbMs": 31.37216699999408,
+          "e2eMs": 69.39999985694885,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 0,
+          "query": "What helps me fall asleep better at night?",
+          "ids": [
+            "battery",
+            "sleep",
+            "water",
+            "rain",
+            "stretch"
+          ],
+          "embeddingMs": 10.900000095367432,
+          "dbMs": 9.928249999997206,
+          "e2eMs": 32.799999952316284,
+          "recall": 1,
+          "ndcg": 0.6309297535714575
+        },
+        {
+          "repeat": 0,
+          "query": "How can a beginner avoid injuries while training to run?",
+          "ids": [
+            "running",
+            "train",
+            "sleep",
+            "worker",
+            "phishing"
+          ],
+          "embeddingMs": 9.600000143051147,
+          "dbMs": 13.994458000001032,
+          "e2eMs": 36.59999990463257,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 0,
+          "query": "How can I retrieve text with a similar meaning using a graph?",
+          "ids": [
+            "vector",
+            "hybrid",
+            "train",
+            "battery",
+            "index"
+          ],
+          "embeddingMs": 11.100000143051147,
+          "dbMs": 10.625625000015134,
+          "e2eMs": 38.39999985694885,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 0,
+          "query": "How can a database save several updates as one indivisible operation?",
+          "ids": [
+            "transaction",
+            "backup",
+            "hybrid",
+            "train",
+            "password"
+          ],
+          "embeddingMs": 11.799999952316284,
+          "dbMs": 7.9256250000034925,
+          "e2eMs": 40.299999952316284,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 0,
+          "query": "Why does the sea level repeatedly rise and fall?",
+          "ids": [
+            "rain",
+            "ocean",
+            "wind",
+            "bread",
+            "tomato"
+          ],
+          "embeddingMs": 8.5,
+          "dbMs": 8.977584000007482,
+          "e2eMs": 34.90000009536743,
+          "recall": 1,
+          "ndcg": 0.6309297535714575
+        },
+        {
+          "repeat": 0,
+          "query": "How do I keep a web page responsive during heavy calculations?",
+          "ids": [
+            "worker",
+            "water",
+            "backup",
+            "battery",
+            "stretch"
+          ],
+          "embeddingMs": 9.599999904632568,
+          "dbMs": 11.129916000005323,
+          "e2eMs": 36.19999980926514,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 1,
+          "query": "How can my roof generate electricity from sunshine?",
+          "ids": [
+            "solar",
+            "wind",
+            "battery",
+            "heat",
+            "train"
+          ],
+          "embeddingMs": 8.399999856948853,
+          "dbMs": 6.721625000005588,
+          "e2eMs": 30.40000009536743,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 1,
+          "query": "How do I keep solar energy available after sunset?",
+          "ids": [
+            "solar",
+            "battery",
+            "backup",
+            "passport",
+            "sleep"
+          ],
+          "embeddingMs": 9.600000143051147,
+          "dbMs": 10.098499999992782,
+          "e2eMs": 33.5,
+          "recall": 1,
+          "ndcg": 0.6309297535714575
+        },
+        {
+          "repeat": 1,
+          "query": "What travel option connects downtown areas without airport queues?",
+          "ids": [
+            "train",
+            "passport",
+            "bike",
+            "encryption",
+            "flight"
+          ],
+          "embeddingMs": 9.100000143051147,
+          "dbMs": 8.290584000002127,
+          "e2eMs": 22.90000009536743,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 1,
+          "query": "What makes a dough expand before it is baked?",
+          "ids": [
+            "bread",
+            "flight",
+            "passport",
+            "rain",
+            "rice"
+          ],
+          "embeddingMs": 8.299999952316284,
+          "dbMs": 10.824917000019923,
+          "e2eMs": 34.09999990463257,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 1,
+          "query": "How do I check whether saved copies of my files can be recovered?",
+          "ids": [
+            "backup",
+            "encryption",
+            "passport",
+            "testing",
+            "train"
+          ],
+          "embeddingMs": 12.099999904632568,
+          "dbMs": 10.026791999989655,
+          "e2eMs": 51,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 1,
+          "query": "How can I recognize a message trying to steal my login?",
+          "ids": [
+            "phishing",
+            "train",
+            "password",
+            "encryption",
+            "bread"
+          ],
+          "embeddingMs": 10.399999856948853,
+          "dbMs": 20.476332999998704,
+          "e2eMs": 54.40000009536743,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 1,
+          "query": "What helps me fall asleep better at night?",
+          "ids": [
+            "battery",
+            "sleep",
+            "water",
+            "rain",
+            "stretch"
+          ],
+          "embeddingMs": 7.900000095367432,
+          "dbMs": 22.239667000016198,
+          "e2eMs": 53.09999990463257,
+          "recall": 1,
+          "ndcg": 0.6309297535714575
+        },
+        {
+          "repeat": 1,
+          "query": "How can a beginner avoid injuries while training to run?",
+          "ids": [
+            "running",
+            "train",
+            "sleep",
+            "worker",
+            "phishing"
+          ],
+          "embeddingMs": 9.5,
+          "dbMs": 44.14058400000795,
+          "e2eMs": 80.60000014305115,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 1,
+          "query": "How can I retrieve text with a similar meaning using a graph?",
+          "ids": [
+            "vector",
+            "hybrid",
+            "train",
+            "battery",
+            "index"
+          ],
+          "embeddingMs": 14.400000095367432,
+          "dbMs": 11.026624999998603,
+          "e2eMs": 95.70000004768372,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 1,
+          "query": "How can a database save several updates as one indivisible operation?",
+          "ids": [
+            "transaction",
+            "backup",
+            "hybrid",
+            "train",
+            "password"
+          ],
+          "embeddingMs": 12.099999904632568,
+          "dbMs": 7.072041999985231,
+          "e2eMs": 32.19999980926514,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 1,
+          "query": "Why does the sea level repeatedly rise and fall?",
+          "ids": [
+            "rain",
+            "ocean",
+            "wind",
+            "bread",
+            "tomato"
+          ],
+          "embeddingMs": 8.599999904632568,
+          "dbMs": 12.652084000001196,
+          "e2eMs": 40.200000047683716,
+          "recall": 1,
+          "ndcg": 0.6309297535714575
+        },
+        {
+          "repeat": 1,
+          "query": "How do I keep a web page responsive during heavy calculations?",
+          "ids": [
+            "worker",
+            "water",
+            "backup",
+            "battery",
+            "stretch"
+          ],
+          "embeddingMs": 10,
+          "dbMs": 11.454333000001498,
+          "e2eMs": 29.699999809265137,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 2,
+          "query": "How can my roof generate electricity from sunshine?",
+          "ids": [
+            "solar",
+            "wind",
+            "battery",
+            "heat",
+            "train"
+          ],
+          "embeddingMs": 8.599999904632568,
+          "dbMs": 6.215166999987559,
+          "e2eMs": 20.200000047683716,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 2,
+          "query": "How do I keep solar energy available after sunset?",
+          "ids": [
+            "solar",
+            "battery",
+            "backup",
+            "passport",
+            "sleep"
+          ],
+          "embeddingMs": 9,
+          "dbMs": 12.74033299999428,
+          "e2eMs": 32,
+          "recall": 1,
+          "ndcg": 0.6309297535714575
+        },
+        {
+          "repeat": 2,
+          "query": "What travel option connects downtown areas without airport queues?",
+          "ids": [
+            "train",
+            "passport",
+            "bike",
+            "encryption",
+            "flight"
+          ],
+          "embeddingMs": 9.5,
+          "dbMs": 11.061291999998502,
+          "e2eMs": 35.5,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 2,
+          "query": "What makes a dough expand before it is baked?",
+          "ids": [
+            "bread",
+            "flight",
+            "passport",
+            "rain",
+            "rice"
+          ],
+          "embeddingMs": 8.5,
+          "dbMs": 9.874749999988126,
+          "e2eMs": 23.699999809265137,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 2,
+          "query": "How do I check whether saved copies of my files can be recovered?",
+          "ids": [
+            "backup",
+            "encryption",
+            "passport",
+            "testing",
+            "train"
+          ],
+          "embeddingMs": 11,
+          "dbMs": 9.237708000000566,
+          "e2eMs": 31,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 2,
+          "query": "How can I recognize a message trying to steal my login?",
+          "ids": [
+            "phishing",
+            "train",
+            "password",
+            "encryption",
+            "bread"
+          ],
+          "embeddingMs": 10.700000047683716,
+          "dbMs": 6.849958999984665,
+          "e2eMs": 23.09999990463257,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 2,
+          "query": "What helps me fall asleep better at night?",
+          "ids": [
+            "battery",
+            "sleep",
+            "water",
+            "rain",
+            "stretch"
+          ],
+          "embeddingMs": 8.299999952316284,
+          "dbMs": 8.78354199999012,
+          "e2eMs": 22.399999856948853,
+          "recall": 1,
+          "ndcg": 0.6309297535714575
+        },
+        {
+          "repeat": 2,
+          "query": "How can a beginner avoid injuries while training to run?",
+          "ids": [
+            "running",
+            "train",
+            "sleep",
+            "worker",
+            "phishing"
+          ],
+          "embeddingMs": 9.5,
+          "dbMs": 7.970582999987528,
+          "e2eMs": 22.700000047683716,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 2,
+          "query": "How can I retrieve text with a similar meaning using a graph?",
+          "ids": [
+            "vector",
+            "hybrid",
+            "train",
+            "battery",
+            "index"
+          ],
+          "embeddingMs": 10.300000190734863,
+          "dbMs": 10.371541999978945,
+          "e2eMs": 36.59999990463257,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 2,
+          "query": "How can a database save several updates as one indivisible operation?",
+          "ids": [
+            "transaction",
+            "backup",
+            "hybrid",
+            "train",
+            "password"
+          ],
+          "embeddingMs": 12.700000047683716,
+          "dbMs": 11.775875000021188,
+          "e2eMs": 41.30000019073486,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 2,
+          "query": "Why does the sea level repeatedly rise and fall?",
+          "ids": [
+            "rain",
+            "ocean",
+            "wind",
+            "bread",
+            "tomato"
+          ],
+          "embeddingMs": 8.700000047683716,
+          "dbMs": 7.454584000020986,
+          "e2eMs": 25.199999809265137,
+          "recall": 1,
+          "ndcg": 0.6309297535714575
+        },
+        {
+          "repeat": 2,
+          "query": "How do I keep a web page responsive during heavy calculations?",
+          "ids": [
+            "worker",
+            "water",
+            "backup",
+            "battery",
+            "stretch"
+          ],
+          "embeddingMs": 9.600000143051147,
+          "dbMs": 16.55995900000562,
+          "e2eMs": 51.5,
+          "recall": 1,
+          "ndcg": 1
+        }
+      ],
+      "writes": [
+        {
+          "repeat": 0,
+          "strategy": "each",
+          "writeMs": 226.2996659999917,
+          "refreshMs": 2262.2172090000095,
+          "e2eMs": 2687
+        },
+        {
+          "repeat": 0,
+          "strategy": "final",
+          "writeMs": 154.82858499999566,
+          "refreshMs": 522.161248999997,
+          "e2eMs": 711.5
+        },
+        {
+          "repeat": 1,
+          "strategy": "final",
+          "writeMs": 140.90741799998796,
+          "refreshMs": 508.36195900000166,
+          "e2eMs": 664.5
+        },
+        {
+          "repeat": 1,
+          "strategy": "each",
+          "writeMs": 526.9878330000065,
+          "refreshMs": 2248.9644999999873,
+          "e2eMs": 2835.2000000476837
+        },
+        {
+          "repeat": 2,
+          "strategy": "each",
+          "writeMs": 226.3527929999982,
+          "refreshMs": 2583.020709000004,
+          "e2eMs": 2916
+        },
+        {
+          "repeat": 2,
+          "strategy": "final",
+          "writeMs": 244.71108300006017,
+          "refreshMs": 823.6445430000022,
+          "e2eMs": 1164.0999999046326
+        }
+      ],
+      "firstQuery": {
+        "query": "How can my roof generate electricity from sunshine?",
+        "ids": [
+          "solar",
+          "wind",
+          "battery",
+          "heat",
+          "train"
+        ],
+        "embeddingMs": 34.10000014305115,
+        "dbMs": 43.37241599999834,
+        "e2eMs": 112.5,
+        "recall": 1,
+        "ndcg": 1
+      },
+      "stateChecks": {
+        "incrementalFound": true,
+        "otherCollectionEmpty": true,
+        "switchBackFound": true
+      },
+      "summary": {
+        "recall5": 1,
+        "ndcg5": 0.9077324383928644,
+        "queryEmbeddingMedianMs": 9.600000143051147,
+        "dbMedianMs": 10.625625000015134,
+        "e2eMedianMs": 34.90000009536743,
+        "batch1MedianMs": 519.9000000953674,
+        "batch8MedianMs": 553.5999999046326,
+        "refreshEachMedianMs": 2835.2000000476837,
+        "refreshFinalMedianMs": 711.5
+      }
+    },
+    {
+      "config": {
+        "backend": "wasm",
+        "dtype": "q8",
+        "reason": "已选择 WASM 兼容模式",
+        "threads": 1,
+        "loadMs": 488.7999999523163,
+        "reused": false,
+        "resources": [
+          {
+            "url": "http://127.0.0.1.nip.io:15174/models/Xenova/all-MiniLM-L6-v2/tokenizer.json",
+            "durationMs": 5.400000095367432,
+            "transferBytes": 300,
+            "decodedBytes": 711661
+          },
+          {
+            "url": "http://127.0.0.1.nip.io:15174/models/Xenova/all-MiniLM-L6-v2/tokenizer_config.json",
+            "durationMs": 13.399999856948853,
+            "transferBytes": 300,
+            "decodedBytes": 366
+          },
+          {
+            "url": "http://127.0.0.1.nip.io:15174/models/Xenova/all-MiniLM-L6-v2/config.json",
+            "durationMs": 13.200000047683716,
+            "transferBytes": 300,
+            "decodedBytes": 650
+          },
+          {
+            "url": "http://127.0.0.1.nip.io:15174/models/Xenova/all-MiniLM-L6-v2/onnx/model_quantized.onnx",
+            "durationMs": 35.700000047683716,
+            "transferBytes": 300,
+            "decodedBytes": 22972370
+          }
+        ]
+      },
+      "loadMs": 488.7999999523163,
+      "batch": [
+        {
+          "repeat": 0,
+          "batchSize": 1,
+          "ms": 1296.2999999523163,
+          "documentsPerSecond": 24.685643756211604
+        },
+        {
+          "repeat": 0,
+          "batchSize": 8,
+          "ms": 703.6000001430511,
+          "documentsPerSecond": 45.480386574039194
+        },
+        {
+          "repeat": 1,
+          "batchSize": 8,
+          "ms": 655.0999999046326,
+          "documentsPerSecond": 48.847504204943455
+        },
+        {
+          "repeat": 1,
+          "batchSize": 1,
+          "ms": 603.7000000476837,
+          "documentsPerSecond": 53.00646015814553
+        },
+        {
+          "repeat": 2,
+          "batchSize": 1,
+          "ms": 603.5999999046326,
+          "documentsPerSecond": 53.01524189041738
+        },
+        {
+          "repeat": 2,
+          "batchSize": 8,
+          "ms": 587.4000000953674,
+          "documentsPerSecond": 54.477357839299685
+        }
+      ],
+      "queries": [
+        {
+          "repeat": 0,
+          "query": "How can my roof generate electricity from sunshine?",
+          "ids": [
+            "solar",
+            "wind",
+            "battery",
+            "heat",
+            "train"
+          ],
+          "embeddingMs": 11.599999904632568,
+          "dbMs": 39.940042000001995,
+          "e2eMs": 107.09999990463257,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 0,
+          "query": "How do I keep solar energy available after sunset?",
+          "ids": [
+            "solar",
+            "battery",
+            "backup",
+            "passport",
+            "moon"
+          ],
+          "embeddingMs": 11.5,
+          "dbMs": 32.39695799999754,
+          "e2eMs": 52.299999952316284,
+          "recall": 1,
+          "ndcg": 0.6309297535714575
+        },
+        {
+          "repeat": 0,
+          "query": "What travel option connects downtown areas without airport queues?",
+          "ids": [
+            "train",
+            "passport",
+            "bike",
+            "encryption",
+            "flight"
+          ],
+          "embeddingMs": 15.700000047683716,
+          "dbMs": 30.809124999999767,
+          "e2eMs": 54.09999990463257,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 0,
+          "query": "What makes a dough expand before it is baked?",
+          "ids": [
+            "bread",
+            "flight",
+            "passport",
+            "rain",
+            "rice"
+          ],
+          "embeddingMs": 12.299999952316284,
+          "dbMs": 17.262584000010975,
+          "e2eMs": 38.40000009536743,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 0,
+          "query": "How do I check whether saved copies of my files can be recovered?",
+          "ids": [
+            "backup",
+            "encryption",
+            "passport",
+            "testing",
+            "train"
+          ],
+          "embeddingMs": 14.299999952316284,
+          "dbMs": 17.938832999992883,
+          "e2eMs": 53.299999952316284,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 0,
+          "query": "How can I recognize a message trying to steal my login?",
+          "ids": [
+            "phishing",
+            "train",
+            "password",
+            "encryption",
+            "bread"
+          ],
+          "embeddingMs": 13.900000095367432,
+          "dbMs": 38.09216600001673,
+          "e2eMs": 69.20000004768372,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 0,
+          "query": "What helps me fall asleep better at night?",
+          "ids": [
+            "battery",
+            "sleep",
+            "stretch",
+            "rain",
+            "water"
+          ],
+          "embeddingMs": 9.799999952316284,
+          "dbMs": 41.658666999981506,
+          "e2eMs": 69.29999995231628,
+          "recall": 1,
+          "ndcg": 0.6309297535714575
+        },
+        {
+          "repeat": 0,
+          "query": "How can a beginner avoid injuries while training to run?",
+          "ids": [
+            "running",
+            "train",
+            "sleep",
+            "worker",
+            "phishing"
+          ],
+          "embeddingMs": 12.799999952316284,
+          "dbMs": 25.867208000010578,
+          "e2eMs": 53.90000009536743,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 0,
+          "query": "How can I retrieve text with a similar meaning using a graph?",
+          "ids": [
+            "vector",
+            "hybrid",
+            "train",
+            "index",
+            "battery"
+          ],
+          "embeddingMs": 13.599999904632568,
+          "dbMs": 42.34262499999022,
+          "e2eMs": 68.29999995231628,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 0,
+          "query": "How can a database save several updates as one indivisible operation?",
+          "ids": [
+            "transaction",
+            "backup",
+            "hybrid",
+            "train",
+            "password"
+          ],
+          "embeddingMs": 13.5,
+          "dbMs": 33.509625000006054,
+          "e2eMs": 61.5,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 0,
+          "query": "Why does the sea level repeatedly rise and fall?",
+          "ids": [
+            "rain",
+            "ocean",
+            "wind",
+            "bread",
+            "tomato"
+          ],
+          "embeddingMs": 11.5,
+          "dbMs": 31.931458000006387,
+          "e2eMs": 67.70000004768372,
+          "recall": 1,
+          "ndcg": 0.6309297535714575
+        },
+        {
+          "repeat": 0,
+          "query": "How do I keep a web page responsive during heavy calculations?",
+          "ids": [
+            "worker",
+            "water",
+            "backup",
+            "cache",
+            "battery"
+          ],
+          "embeddingMs": 12.399999856948853,
+          "dbMs": 33.65308299998287,
+          "e2eMs": 150.59999990463257,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 1,
+          "query": "How can my roof generate electricity from sunshine?",
+          "ids": [
+            "solar",
+            "wind",
+            "battery",
+            "heat",
+            "train"
+          ],
+          "embeddingMs": 9.700000047683716,
+          "dbMs": 17.742250000010245,
+          "e2eMs": 38.89999985694885,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 1,
+          "query": "How do I keep solar energy available after sunset?",
+          "ids": [
+            "solar",
+            "battery",
+            "backup",
+            "passport",
+            "moon"
+          ],
+          "embeddingMs": 10,
+          "dbMs": 21.450542000005953,
+          "e2eMs": 53.80000019073486,
+          "recall": 1,
+          "ndcg": 0.6309297535714575
+        },
+        {
+          "repeat": 1,
+          "query": "What travel option connects downtown areas without airport queues?",
+          "ids": [
+            "train",
+            "passport",
+            "bike",
+            "encryption",
+            "flight"
+          ],
+          "embeddingMs": 12.900000095367432,
+          "dbMs": 27.08470799998031,
+          "e2eMs": 47.19999980926514,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 1,
+          "query": "What makes a dough expand before it is baked?",
+          "ids": [
+            "bread",
+            "flight",
+            "passport",
+            "rain",
+            "rice"
+          ],
+          "embeddingMs": 14.599999904632568,
+          "dbMs": 41.84933299999102,
+          "e2eMs": 64.59999990463257,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 1,
+          "query": "How do I check whether saved copies of my files can be recovered?",
+          "ids": [
+            "backup",
+            "encryption",
+            "passport",
+            "testing",
+            "train"
+          ],
+          "embeddingMs": 14.599999904632568,
+          "dbMs": 40.59354099998018,
+          "e2eMs": 66.60000014305115,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 1,
+          "query": "How can I recognize a message trying to steal my login?",
+          "ids": [
+            "phishing",
+            "train",
+            "password",
+            "encryption",
+            "bread"
+          ],
+          "embeddingMs": 13,
+          "dbMs": 22.845750000007683,
+          "e2eMs": 48.40000009536743,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 1,
+          "query": "What helps me fall asleep better at night?",
+          "ids": [
+            "battery",
+            "sleep",
+            "stretch",
+            "rain",
+            "water"
+          ],
+          "embeddingMs": 9.599999904632568,
+          "dbMs": 21.243000000016764,
+          "e2eMs": 41.299999952316284,
+          "recall": 1,
+          "ndcg": 0.6309297535714575
+        },
+        {
+          "repeat": 1,
+          "query": "How can a beginner avoid injuries while training to run?",
+          "ids": [
+            "running",
+            "train",
+            "sleep",
+            "worker",
+            "phishing"
+          ],
+          "embeddingMs": 11.799999952316284,
+          "dbMs": 24.16395799999009,
+          "e2eMs": 52.59999990463257,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 1,
+          "query": "How can I retrieve text with a similar meaning using a graph?",
+          "ids": [
+            "vector",
+            "hybrid",
+            "train",
+            "index",
+            "battery"
+          ],
+          "embeddingMs": 14.400000095367432,
+          "dbMs": 23.17179200000828,
+          "e2eMs": 48.60000014305115,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 1,
+          "query": "How can a database save several updates as one indivisible operation?",
+          "ids": [
+            "transaction",
+            "backup",
+            "hybrid",
+            "train",
+            "password"
+          ],
+          "embeddingMs": 15.5,
+          "dbMs": 26.514583000011044,
+          "e2eMs": 55.90000009536743,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 1,
+          "query": "Why does the sea level repeatedly rise and fall?",
+          "ids": [
+            "rain",
+            "ocean",
+            "wind",
+            "bread",
+            "tomato"
+          ],
+          "embeddingMs": 10.800000190734863,
+          "dbMs": 17.153083000011975,
+          "e2eMs": 39.700000047683716,
+          "recall": 1,
+          "ndcg": 0.6309297535714575
+        },
+        {
+          "repeat": 1,
+          "query": "How do I keep a web page responsive during heavy calculations?",
+          "ids": [
+            "worker",
+            "water",
+            "backup",
+            "cache",
+            "battery"
+          ],
+          "embeddingMs": 12.099999904632568,
+          "dbMs": 28.459625000017695,
+          "e2eMs": 57.5,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 2,
+          "query": "How can my roof generate electricity from sunshine?",
+          "ids": [
+            "solar",
+            "wind",
+            "battery",
+            "heat",
+            "train"
+          ],
+          "embeddingMs": 9.400000095367432,
+          "dbMs": 21.36404099999345,
+          "e2eMs": 53.89999985694885,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 2,
+          "query": "How do I keep solar energy available after sunset?",
+          "ids": [
+            "solar",
+            "battery",
+            "backup",
+            "passport",
+            "moon"
+          ],
+          "embeddingMs": 10.200000047683716,
+          "dbMs": 25.85020899999654,
+          "e2eMs": 58.5,
+          "recall": 1,
+          "ndcg": 0.6309297535714575
+        },
+        {
+          "repeat": 2,
+          "query": "What travel option connects downtown areas without airport queues?",
+          "ids": [
+            "train",
+            "passport",
+            "bike",
+            "encryption",
+            "flight"
+          ],
+          "embeddingMs": 11.099999904632568,
+          "dbMs": 26.367957999987993,
+          "e2eMs": 43.700000047683716,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 2,
+          "query": "What makes a dough expand before it is baked?",
+          "ids": [
+            "bread",
+            "flight",
+            "passport",
+            "rain",
+            "rice"
+          ],
+          "embeddingMs": 10.299999952316284,
+          "dbMs": 18.02691600000253,
+          "e2eMs": 42.59999990463257,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 2,
+          "query": "How do I check whether saved copies of my files can be recovered?",
+          "ids": [
+            "backup",
+            "encryption",
+            "passport",
+            "testing",
+            "train"
+          ],
+          "embeddingMs": 12.799999952316284,
+          "dbMs": 23.682041000021854,
+          "e2eMs": 48.60000014305115,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 2,
+          "query": "How can I recognize a message trying to steal my login?",
+          "ids": [
+            "phishing",
+            "train",
+            "password",
+            "encryption",
+            "bread"
+          ],
+          "embeddingMs": 11.900000095367432,
+          "dbMs": 14.022208000009414,
+          "e2eMs": 34.60000014305115,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 2,
+          "query": "What helps me fall asleep better at night?",
+          "ids": [
+            "battery",
+            "sleep",
+            "stretch",
+            "rain",
+            "water"
+          ],
+          "embeddingMs": 10,
+          "dbMs": 17.860708000021987,
+          "e2eMs": 48.40000009536743,
+          "recall": 1,
+          "ndcg": 0.6309297535714575
+        },
+        {
+          "repeat": 2,
+          "query": "How can a beginner avoid injuries while training to run?",
+          "ids": [
+            "running",
+            "train",
+            "sleep",
+            "worker",
+            "phishing"
+          ],
+          "embeddingMs": 11.5,
+          "dbMs": 19.06562499998836,
+          "e2eMs": 42.69999980926514,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 2,
+          "query": "How can I retrieve text with a similar meaning using a graph?",
+          "ids": [
+            "vector",
+            "hybrid",
+            "train",
+            "index",
+            "battery"
+          ],
+          "embeddingMs": 12.899999856948853,
+          "dbMs": 17.227416999987327,
+          "e2eMs": 35.5,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 2,
+          "query": "How can a database save several updates as one indivisible operation?",
+          "ids": [
+            "transaction",
+            "backup",
+            "hybrid",
+            "train",
+            "password"
+          ],
+          "embeddingMs": 14.900000095367432,
+          "dbMs": 16.199457999988226,
+          "e2eMs": 37.09999990463257,
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "repeat": 2,
+          "query": "Why does the sea level repeatedly rise and fall?",
+          "ids": [
+            "rain",
+            "ocean",
+            "wind",
+            "bread",
+            "tomato"
+          ],
+          "embeddingMs": 10.900000095367432,
+          "dbMs": 15.295791999989888,
+          "e2eMs": 34.299999952316284,
+          "recall": 1,
+          "ndcg": 0.6309297535714575
+        },
+        {
+          "repeat": 2,
+          "query": "How do I keep a web page responsive during heavy calculations?",
+          "ids": [
+            "worker",
+            "water",
+            "backup",
+            "cache",
+            "battery"
+          ],
+          "embeddingMs": 11.600000143051147,
+          "dbMs": 22.48550000000978,
+          "e2eMs": 43.5,
+          "recall": 1,
+          "ndcg": 1
+        }
+      ],
+      "writes": [
+        {
+          "repeat": 0,
+          "strategy": "each",
+          "writeMs": 308.0820820000081,
+          "refreshMs": 2860.671543000004,
+          "e2eMs": 3386.2999999523163
+        },
+        {
+          "repeat": 0,
+          "strategy": "final",
+          "writeMs": 273.0977070000663,
+          "refreshMs": 523.1746250000142,
+          "e2eMs": 875.7000000476837
+        },
+        {
+          "repeat": 1,
+          "strategy": "final",
+          "writeMs": 401.930250000034,
+          "refreshMs": 784.6385419999424,
+          "e2eMs": 1286.2999999523163
+        },
+        {
+          "repeat": 1,
+          "strategy": "each",
+          "writeMs": 807.5112930000178,
+          "refreshMs": 2664.300416000013,
+          "e2eMs": 3522.800000190735
+        },
+        {
+          "repeat": 2,
+          "strategy": "each",
+          "writeMs": 476.47229099998367,
+          "refreshMs": 2444.4174180000264,
+          "e2eMs": 2966.399999856949
+        },
+        {
+          "repeat": 2,
+          "strategy": "final",
+          "writeMs": 622.4535000000324,
+          "refreshMs": 531.8412079999689,
+          "e2eMs": 1362
+        }
+      ],
+      "firstQuery": {
+        "query": "How can my roof generate electricity from sunshine?",
+        "ids": [
+          "solar",
+          "wind",
+          "battery",
+          "heat",
+          "train"
+        ],
+        "embeddingMs": 27.399999856948853,
+        "dbMs": 94.28287500000442,
+        "e2eMs": 140.40000009536743,
+        "recall": 1,
+        "ndcg": 1
+      },
+      "stateChecks": {
+        "incrementalFound": true,
+        "otherCollectionEmpty": true,
+        "switchBackFound": true
+      },
+      "summary": {
+        "recall5": 1,
+        "ndcg5": 0.9077324383928644,
+        "queryEmbeddingMedianMs": 12.099999904632568,
+        "dbMedianMs": 24.16395799999009,
+        "e2eMedianMs": 52.59999990463257,
+        "batch1MedianMs": 603.7000000476837,
+        "batch8MedianMs": 655.0999999046326,
+        "refreshEachMedianMs": 3386.2999999523163,
+        "refreshFinalMedianMs": 1286.2999999523163
+      }
+    }
+  ]
+}
