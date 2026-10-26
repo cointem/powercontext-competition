@@ -1,0 +1,474 @@
+version: 0.7.0
+kind: app
+dependencies: []
+app:
+  name: 时空旅馆：阿零记得你
+  description: 玩家选择改变NPC态度和结局，seekdb跨会话保存记忆。支持规则剧情及可选模型叙事。
+  mode: workflow
+  icon: 🌙
+  icon_background: '#E4D7F5'
+  use_icon_as_answer_icon: false
+workflow:
+  conversation_variables: []
+  environment_variables:
+  - id: 53edfb19-b627-4d21-9402-2384248c4e66
+    name: GAME_URL
+    value: http://host.docker.internal:18089
+    value_type: string
+    description: 状态服务地址
+  - id: 986e73dd-4c33-4149-a28b-9138ca0be3fe
+    name: GAME_TOKEN
+    value: ''
+    value_type: secret
+    description: 与状态服务GAME_TOKEN一致
+  features:
+    file_upload:
+      enabled: false
+    opening_statement: ''
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+  graph:
+    nodes:
+    - id: start
+      type: custom
+      position:
+        x: 0
+        y: 100
+      width: 244
+      height: 100
+      sourcePosition: right
+      targetPosition: left
+      data:
+        type: start
+        title: 选择你的行动
+        desc: ''
+        variables:
+        - variable: player_id
+          label: 旅客代号（同一代号继续剧情）
+          type: text-input
+          required: true
+          max_length: 64
+        - variable: action
+          label: 行动
+          type: select
+          options:
+          - 入住
+          - 帮忙
+          - 捣乱
+          - 道歉
+          - 探索
+          - 赴约
+          - 回忆
+          - 重新开始
+          required: true
+        - variable: request_id
+          label: 请求编号（通常留空）
+          type: text-input
+          required: false
+          max_length: 64
+    - id: prepare
+      type: custom
+      position:
+        x: 300
+        y: 100
+      width: 244
+      height: 100
+      sourcePosition: right
+      targetPosition: left
+      data:
+        type: code
+        title: 准备本轮请求
+        desc: ''
+        code_language: python3
+        code: "import json, re, uuid\ndef main(player_id: str, action: str, request_id:\
+          \ str = \"\") -> dict:\n    if not re.fullmatch(r\"[A-Za-z0-9_-]{1,64}\"\
+          , player_id):\n        raise ValueError(\"旅客代号使用1到64位字母、数字、下划线或短横线\")\n\
+          \    return {\"body\": json.dumps({\"player_id\": player_id, \"action\"\
+          : action, \"request_id\": request_id or uuid.uuid4().hex}, ensure_ascii=False)}\n"
+        variables:
+        - variable: player_id
+          value_selector:
+          - start
+          - player_id
+        - variable: action
+          value_selector:
+          - start
+          - action
+        - variable: request_id
+          value_selector:
+          - start
+          - request_id
+        outputs:
+          body:
+            type: string
+            children: null
+    - id: context
+      type: custom
+      position:
+        x: 600
+        y: 100
+      width: 244
+      height: 100
+      sourcePosition: right
+      targetPosition: left
+      data:
+        type: http-request
+        title: 从 seekdb 读取记忆
+        desc: ''
+        method: post
+        url: '{{#env.GAME_URL#}}/context'
+        authorization:
+          type: no-auth
+        headers: 'Content-Type:application/json
+
+          Authorization:Bearer {{#env.GAME_TOKEN#}}'
+        params: ''
+        body:
+          type: raw-text
+          data:
+          - key: ''
+            type: text
+            value: '{{#prepare.body#}}'
+        timeout:
+          connect: 10
+          read: 60
+          write: 20
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+    - id: rules
+      type: custom
+      position:
+        x: 900
+        y: 100
+      width: 244
+      height: 100
+      sourcePosition: right
+      targetPosition: left
+      data:
+        type: code
+        title: 决定剧情与 NPC 态度
+        desc: ''
+        code_language: python3
+        code: "\"\"\"Runs inside Dify's Python Code node. No database or network access\
+          \ here.\"\"\"\nimport json\n\n\ndef main(context: str) -> dict:\n    data\
+          \ = json.loads(context)\n    if data.get(\"replay\"):\n        return {\"\
+          commit\": json.dumps(data[\"replay\"], ensure_ascii=False)}\n    state =\
+          \ dict(data[\"state\"])\n    state[\"items\"] = list(state[\"items\"])\n\
+          \    state[\"flags\"] = list(state[\"flags\"])\n    action = data[\"action\"\
+          ]\n    trust = state[\"trust\"]\n    scene = state[\"scene\"]\n    story\
+          \ = \"\"\n    if action == \"重新开始\":\n        state = {\"scene\": \"门厅\"\
+          , \"trust\": 0, \"items\": [], \"flags\": [], \"loop\": state[\"loop\"]\
+          \ + 1}\n        story = \"钟声倒转，你再次站在旅馆门前。前台阿零翻到一本新账簿：这一次，你会留下怎样的名字？\"\n\
+          \    elif action == \"回忆\":\n        memories = [turn[\"action\"] + \"：\"\
+          \ + turn[\"story\"] for turn in data[\"history\"]]\n        story = \"阿零翻开旅客簿：\\\
+          n\" + (\"\\n\".join(memories) if memories else \"这里还是空白，先办理入住吧。\")\n   \
+          \ elif scene == \"结局\":\n        story = \"这一轮旅程已经结束。阿零替你保留了旅客簿；选择「回忆」重温，或「重新开始」开启下一轮。\"\
+          \n    elif action == \"入住\":\n        if \"铜钥匙\" in state[\"items\"]:\n\
+          \            story = \"阿零认出了你：铜钥匙还在你口袋里，房间一直为你留着。\"\n        else:\n   \
+          \         state[\"items\"].append(\"铜钥匙\")\n            story = \"欢迎来到只在午夜出现的时空旅馆。阿零递给你一把铜钥匙：储藏室里有盏坏灯，也许你愿意帮个忙？\"\
+          \n    elif \"铜钥匙\" not in state[\"items\"]:\n        story = \"阿零轻敲登记簿：先选择「入住」，我才能把这个夜晚的钥匙交给你。\"\
+          \n    elif action == \"帮忙\":\n        if \"修灯\" in state[\"flags\"]:\n \
+          \           story = \"你修好的灯还亮着。阿零笑了：我记得你的好意，别忙着重复修灯，去探索吧。\"\n        else:\n\
+          \            state[\"flags\"].append(\"修灯\")\n            state[\"items\"\
+          ].append(\"星灯\")\n            state[\"trust\"] = min(3, trust + 2)\n   \
+          \         story = \"你接好了旧灯的灯丝，里面竟亮起一整片星空。阿零把星灯交给你：带上它，阁楼的路就不会迷失。\"\n   \
+          \ elif action == \"捣乱\":\n        if \"捣乱\" not in state[\"flags\"]:\n \
+          \           state[\"flags\"].append(\"捣乱\")\n            state[\"trust\"\
+          ] = max(-3, trust - 2)\n        story = \"你把旅客簿折成纸飞机。阿零把它展开，记下你的名字：我会记住这件事。明天换个窗口来，也一样。\"\
+          \n    elif action == \"道歉\":\n        if \"捣乱\" in state[\"flags\"] and\
+          \ \"道歉\" not in state[\"flags\"]:\n            state[\"flags\"].append(\"\
+          道歉\")\n            state[\"trust\"] = min(3, trust + 1)\n            story\
+          \ = \"你把散落的登记页一张张抚平。阿零收起账簿：道歉我收到了，接下来让我看看你的行动。\"\n        else:\n      \
+          \      story = \"阿零点点头：与其反复说抱歉，不如做件让这个夜晚变好的事。\"\n    elif action == \"探索\"\
+          :\n        if scene == \"门厅\":\n            state[\"scene\"] = \"档案室\"\n\
+          \            story = \"铜钥匙打开档案室。墙上的照片里，每位旅客都举着一盏星灯；背面写着：天台见。\"\n       \
+          \ elif scene == \"档案室\" and \"星灯\" in state[\"items\"]:\n            state[\"\
+          scene\"] = \"天台\"\n            story = \"星灯照亮通往天台的楼梯。城市悬在云海上，阿零正在栏杆边等你。选择「赴约」决定这个夜晚的结局。\"\
+          \n        elif scene == \"档案室\":\n            story = \"楼梯在黑暗里折叠，你暂时找不到天台。阿零提醒：储藏室的旧灯还等着人修，试试「帮忙」。\"\
+          \n        else:\n            story = \"你已经来到天台。星灯轻轻晃动，阿零等待你「赴约」。\"\n   \
+          \ elif action == \"赴约\":\n        if scene != \"天台\":\n            story\
+          \ = \"赴约的地点在天台。先带着铜钥匙和星灯探索旅馆吧。\"\n        else:\n            state[\"scene\"\
+          ] = \"结局\"\n            if state[\"trust\"] >= 1:\n                story\
+          \ = \"【结局：时光守护者】阿零把旅馆的钟交给你：你修好的不仅是一盏灯，也是我对旅客的信任。\"\n            else:\n\
+          \                story = \"【结局：独行旅客】阿零替你推开回家的门，却没有交出旅馆的钟：愿下一次相遇，我们能更信任彼此。\"\
+          \n    else:\n        story = \"请选择：入住、帮忙、捣乱、道歉、探索、赴约、回忆、重新开始。\"\n    state[\"\
+          trust\"] = max(-3, min(3, state[\"trust\"]))\n    mood = \"亲切\" if state[\"\
+          trust\"] > 0 else \"戒备\" if state[\"trust\"] < 0 else \"平静\"\n    result\
+          \ = {\n        \"player_id\": data[\"player_id\"], \"request_id\": data[\"\
+          request_id\"], \"action\": action,\n        \"expected_version\": data[\"\
+          version\"], \"state\": state, \"story\": story,\n        \"reply\": f\"\
+          {story}\\n\\n地点：{state['scene']} · 阿零：{mood} · 信任：{state['trust']}\\n背包：{'、'.join(state['items'])\
+          \ or '空'}\\n\\n可选：入住 / 帮忙 / 捣乱 / 道歉 / 探索 / 赴约 / 回忆 / 重新开始\",\n    }\n  \
+          \  return {\"commit\": json.dumps(result, ensure_ascii=False)}\n"
+        variables:
+        - variable: context
+          value_selector:
+          - context
+          - body
+        outputs:
+          commit:
+            type: string
+            children: null
+    - id: save
+      type: custom
+      position:
+        x: 1200
+        y: 100
+      width: 244
+      height: 100
+      sourcePosition: right
+      targetPosition: left
+      data:
+        type: http-request
+        title: 写入 seekdb 并保存本轮
+        desc: ''
+        method: post
+        url: '{{#env.GAME_URL#}}/commit'
+        authorization:
+          type: no-auth
+        headers: 'Content-Type:application/json
+
+          Authorization:Bearer {{#env.GAME_TOKEN#}}'
+        params: ''
+        body:
+          type: raw-text
+          data:
+          - key: ''
+            type: text
+            value: '{{#rules.commit#}}'
+        timeout:
+          connect: 10
+          read: 60
+          write: 20
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+    - id: narration_input
+      type: custom
+      position:
+        x: 1500
+        y: 100
+      width: 244
+      height: 100
+      sourcePosition: right
+      targetPosition: left
+      data:
+        type: code
+        title: 准备叙事
+        desc: ''
+        code_language: python3
+        code: "import json\ndef main(body: str, status_code: int) -> dict:\n    if\
+          \ status_code != 200:\n        raise ValueError(\"本轮未保存，请重试：\" + body)\n\
+          \    result = json.loads(body)\n    return {\"body\": json.dumps({k: result[k]\
+          \ for k in (\"story\", \"reply\", \"state\")}, ensure_ascii=False)}\n"
+        variables:
+        - variable: body
+          value_selector:
+          - save
+          - body
+        - variable: status_code
+          value_selector:
+          - save
+          - status_code
+        outputs:
+          body:
+            type: string
+            children: null
+    - id: narrate
+      type: custom
+      position:
+        x: 1800
+        y: 100
+      width: 244
+      height: 100
+      sourcePosition: right
+      targetPosition: left
+      data:
+        type: http-request
+        title: 叙述这个夜晚
+        desc: ''
+        method: post
+        url: '{{#env.GAME_URL#}}/narrate'
+        authorization:
+          type: no-auth
+        headers: 'Content-Type:application/json
+
+          Authorization:Bearer {{#env.GAME_TOKEN#}}'
+        params: ''
+        body:
+          type: raw-text
+          data:
+          - key: ''
+            type: text
+            value: '{{#narration_input.body#}}'
+        timeout:
+          connect: 10
+          read: 60
+          write: 20
+        retry_config:
+          retry_enabled: false
+          max_retries: 1
+          retry_interval: 1000
+    - id: format
+      type: custom
+      position:
+        x: 2100
+        y: 100
+      width: 244
+      height: 100
+      sourcePosition: right
+      targetPosition: left
+      data:
+        type: code
+        title: 展示剧情和可选行动
+        desc: ''
+        code_language: python3
+        code: "import json\ndef main(body: str, status_code: int) -> dict:\n    if\
+          \ status_code != 200:\n        raise ValueError(\"叙事服务异常：\" + body)\n  \
+          \  result = json.loads(body)\n    return {\"reply\": result[\"reply\"],\
+          \ \"mode\": result[\"mode\"]}\n"
+        variables:
+        - variable: body
+          value_selector:
+          - narrate
+          - body
+        - variable: status_code
+          value_selector:
+          - narrate
+          - status_code
+        outputs:
+          reply:
+            type: string
+            children: null
+          mode:
+            type: string
+            children: null
+    - id: end
+      type: custom
+      position:
+        x: 2400
+        y: 100
+      width: 244
+      height: 100
+      sourcePosition: right
+      targetPosition: left
+      data:
+        type: end
+        title: 旅馆的回应
+        desc: ''
+        outputs:
+        - variable: reply
+          value_selector:
+          - format
+          - reply
+          value_type: string
+        - variable: mode
+          value_selector:
+          - format
+          - mode
+          value_type: string
+    edges:
+    - id: start-prepare
+      type: custom
+      source: start
+      target: prepare
+      sourceHandle: source
+      targetHandle: target
+      data:
+        sourceType: start
+        targetType: code
+        isInLoop: false
+        isInIteration: false
+    - id: prepare-context
+      type: custom
+      source: prepare
+      target: context
+      sourceHandle: source
+      targetHandle: target
+      data:
+        sourceType: code
+        targetType: http-request
+        isInLoop: false
+        isInIteration: false
+    - id: context-rules
+      type: custom
+      source: context
+      target: rules
+      sourceHandle: source
+      targetHandle: target
+      data:
+        sourceType: http-request
+        targetType: code
+        isInLoop: false
+        isInIteration: false
+    - id: rules-save
+      type: custom
+      source: rules
+      target: save
+      sourceHandle: source
+      targetHandle: target
+      data:
+        sourceType: code
+        targetType: http-request
+        isInLoop: false
+        isInIteration: false
+    - id: save-narration_input
+      type: custom
+      source: save
+      target: narration_input
+      sourceHandle: source
+      targetHandle: target
+      data:
+        sourceType: http-request
+        targetType: code
+        isInLoop: false
+        isInIteration: false
+    - id: narration_input-narrate
+      type: custom
+      source: narration_input
+      target: narrate
+      sourceHandle: source
+      targetHandle: target
+      data:
+        sourceType: code
+        targetType: http-request
+        isInLoop: false
+        isInIteration: false
+    - id: narrate-format
+      type: custom
+      source: narrate
+      target: format
+      sourceHandle: source
+      targetHandle: target
+      data:
+        sourceType: http-request
+        targetType: code
+        isInLoop: false
+        isInIteration: false
+    - id: format-end
+      type: custom
+      source: format
+      target: end
+      sourceHandle: source
+      targetHandle: target
+      data:
+        sourceType: code
+        targetType: end
+        isInLoop: false
+        isInIteration: false
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.6

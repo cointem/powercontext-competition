@@ -1,0 +1,404 @@
+{
+  "date": "2026-10-26",
+  "dify_version": "1.18.0",
+  "deployment": "delivery Docker Compose; new seekdb volume; HOTEL_PORT=18090",
+  "app_id": "4ac4b56f-c71b-47fd-9e75-f2a2fd466144",
+  "player": "dify_e2e_eab7a496d8",
+  "runs": [
+    {
+      "action": "入住",
+      "status": "succeeded",
+      "elapsed_time": 0.33287262497469783,
+      "outputs": {
+        "reply": "欢迎来到只在午夜出现的时空旅馆。阿零递给你一把铜钥匙：储藏室里有盏坏灯，也许你愿意帮个忙？\n\n地点：门厅 · 阿零：平静 · 信任：0\n背包：铜钥匙\n\n可选：入住 / 帮忙 / 捣乱 / 道歉 / 探索 / 赴约 / 回忆 / 重新开始",
+        "mode": "规则剧情"
+      },
+      "nodes": [
+        {
+          "title": "选择你的行动",
+          "status": "succeeded"
+        },
+        {
+          "title": "准备本轮请求",
+          "status": "succeeded"
+        },
+        {
+          "title": "从 seekdb 读取记忆",
+          "status": "succeeded"
+        },
+        {
+          "title": "决定剧情与 NPC 态度",
+          "status": "succeeded"
+        },
+        {
+          "title": "写入 seekdb 并保存本轮",
+          "status": "succeeded"
+        },
+        {
+          "title": "准备叙事",
+          "status": "succeeded"
+        },
+        {
+          "title": "叙述这个夜晚",
+          "status": "succeeded"
+        },
+        {
+          "title": "展示剧情和可选行动",
+          "status": "succeeded"
+        },
+        {
+          "title": "旅馆的回应",
+          "status": "succeeded"
+        }
+      ]
+    },
+    {
+      "action": "捣乱",
+      "status": "succeeded",
+      "elapsed_time": 0.23816391616128385,
+      "outputs": {
+        "reply": "你把旅客簿折成纸飞机。阿零把它展开，记下你的名字：我会记住这件事。明天换个窗口来，也一样。\n\n地点：门厅 · 阿零：戒备 · 信任：-2\n背包：铜钥匙\n\n可选：入住 / 帮忙 / 捣乱 / 道歉 / 探索 / 赴约 / 回忆 / 重新开始",
+        "mode": "规则剧情"
+      },
+      "nodes": [
+        {
+          "title": "选择你的行动",
+          "status": "succeeded"
+        },
+        {
+          "title": "准备本轮请求",
+          "status": "succeeded"
+        },
+        {
+          "title": "从 seekdb 读取记忆",
+          "status": "succeeded"
+        },
+        {
+          "title": "决定剧情与 NPC 态度",
+          "status": "succeeded"
+        },
+        {
+          "title": "写入 seekdb 并保存本轮",
+          "status": "succeeded"
+        },
+        {
+          "title": "准备叙事",
+          "status": "succeeded"
+        },
+        {
+          "title": "叙述这个夜晚",
+          "status": "succeeded"
+        },
+        {
+          "title": "展示剧情和可选行动",
+          "status": "succeeded"
+        },
+        {
+          "title": "旅馆的回应",
+          "status": "succeeded"
+        }
+      ]
+    },
+    {
+      "action": "回忆",
+      "status": "succeeded",
+      "elapsed_time": 0.2443860420025885,
+      "outputs": {
+        "reply": "阿零翻开旅客簿：\n入住：欢迎来到只在午夜出现的时空旅馆。阿零递给你一把铜钥匙：储藏室里有盏坏灯，也许你愿意帮个忙？\n捣乱：你把旅客簿折成纸飞机。阿零把它展开，记下你的名字：我会记住这件事。明天换个窗口来，也一样。\n\n地点：门厅 · 阿零：戒备 · 信任：-2\n背包：铜钥匙\n\n可选：入住 / 帮忙 / 捣乱 / 道歉 / 探索 / 赴约 / 回忆 / 重新开始",
+        "mode": "规则剧情"
+      },
+      "nodes": [
+        {
+          "title": "选择你的行动",
+          "status": "succeeded"
+        },
+        {
+          "title": "准备本轮请求",
+          "status": "succeeded"
+        },
+        {
+          "title": "从 seekdb 读取记忆",
+          "status": "succeeded"
+        },
+        {
+          "title": "决定剧情与 NPC 态度",
+          "status": "succeeded"
+        },
+        {
+          "title": "写入 seekdb 并保存本轮",
+          "status": "succeeded"
+        },
+        {
+          "title": "准备叙事",
+          "status": "succeeded"
+        },
+        {
+          "title": "叙述这个夜晚",
+          "status": "succeeded"
+        },
+        {
+          "title": "展示剧情和可选行动",
+          "status": "succeeded"
+        },
+        {
+          "title": "旅馆的回应",
+          "status": "succeeded"
+        }
+      ]
+    },
+    {
+      "action": "道歉",
+      "status": "succeeded",
+      "elapsed_time": 0.27053333283402026,
+      "outputs": {
+        "reply": "你把散落的登记页一张张抚平。阿零收起账簿：道歉我收到了，接下来让我看看你的行动。\n\n地点：门厅 · 阿零：戒备 · 信任：-1\n背包：铜钥匙\n\n可选：入住 / 帮忙 / 捣乱 / 道歉 / 探索 / 赴约 / 回忆 / 重新开始",
+        "mode": "规则剧情"
+      },
+      "nodes": [
+        {
+          "title": "选择你的行动",
+          "status": "succeeded"
+        },
+        {
+          "title": "准备本轮请求",
+          "status": "succeeded"
+        },
+        {
+          "title": "从 seekdb 读取记忆",
+          "status": "succeeded"
+        },
+        {
+          "title": "决定剧情与 NPC 态度",
+          "status": "succeeded"
+        },
+        {
+          "title": "写入 seekdb 并保存本轮",
+          "status": "succeeded"
+        },
+        {
+          "title": "准备叙事",
+          "status": "succeeded"
+        },
+        {
+          "title": "叙述这个夜晚",
+          "status": "succeeded"
+        },
+        {
+          "title": "展示剧情和可选行动",
+          "status": "succeeded"
+        },
+        {
+          "title": "旅馆的回应",
+          "status": "succeeded"
+        }
+      ]
+    },
+    {
+      "action": "帮忙",
+      "status": "succeeded",
+      "elapsed_time": 0.2748243762180209,
+      "outputs": {
+        "reply": "你接好了旧灯的灯丝，里面竟亮起一整片星空。阿零把星灯交给你：带上它，阁楼的路就不会迷失。\n\n地点：门厅 · 阿零：亲切 · 信任：1\n背包：铜钥匙、星灯\n\n可选：入住 / 帮忙 / 捣乱 / 道歉 / 探索 / 赴约 / 回忆 / 重新开始",
+        "mode": "规则剧情"
+      },
+      "nodes": [
+        {
+          "title": "选择你的行动",
+          "status": "succeeded"
+        },
+        {
+          "title": "准备本轮请求",
+          "status": "succeeded"
+        },
+        {
+          "title": "从 seekdb 读取记忆",
+          "status": "succeeded"
+        },
+        {
+          "title": "决定剧情与 NPC 态度",
+          "status": "succeeded"
+        },
+        {
+          "title": "写入 seekdb 并保存本轮",
+          "status": "succeeded"
+        },
+        {
+          "title": "准备叙事",
+          "status": "succeeded"
+        },
+        {
+          "title": "叙述这个夜晚",
+          "status": "succeeded"
+        },
+        {
+          "title": "展示剧情和可选行动",
+          "status": "succeeded"
+        },
+        {
+          "title": "旅馆的回应",
+          "status": "succeeded"
+        }
+      ]
+    },
+    {
+      "action": "探索",
+      "status": "succeeded",
+      "elapsed_time": 0.2566764580551535,
+      "outputs": {
+        "reply": "铜钥匙打开档案室。墙上的照片里，每位旅客都举着一盏星灯；背面写着：天台见。\n\n地点：档案室 · 阿零：亲切 · 信任：1\n背包：铜钥匙、星灯\n\n可选：入住 / 帮忙 / 捣乱 / 道歉 / 探索 / 赴约 / 回忆 / 重新开始",
+        "mode": "规则剧情"
+      },
+      "nodes": [
+        {
+          "title": "选择你的行动",
+          "status": "succeeded"
+        },
+        {
+          "title": "准备本轮请求",
+          "status": "succeeded"
+        },
+        {
+          "title": "从 seekdb 读取记忆",
+          "status": "succeeded"
+        },
+        {
+          "title": "决定剧情与 NPC 态度",
+          "status": "succeeded"
+        },
+        {
+          "title": "写入 seekdb 并保存本轮",
+          "status": "succeeded"
+        },
+        {
+          "title": "准备叙事",
+          "status": "succeeded"
+        },
+        {
+          "title": "叙述这个夜晚",
+          "status": "succeeded"
+        },
+        {
+          "title": "展示剧情和可选行动",
+          "status": "succeeded"
+        },
+        {
+          "title": "旅馆的回应",
+          "status": "succeeded"
+        }
+      ]
+    },
+    {
+      "action": "探索",
+      "status": "succeeded",
+      "elapsed_time": 0.26486500003375113,
+      "outputs": {
+        "reply": "星灯照亮通往天台的楼梯。城市悬在云海上，阿零正在栏杆边等你。选择「赴约」决定这个夜晚的结局。\n\n地点：天台 · 阿零：亲切 · 信任：1\n背包：铜钥匙、星灯\n\n可选：入住 / 帮忙 / 捣乱 / 道歉 / 探索 / 赴约 / 回忆 / 重新开始",
+        "mode": "规则剧情"
+      },
+      "nodes": [
+        {
+          "title": "选择你的行动",
+          "status": "succeeded"
+        },
+        {
+          "title": "准备本轮请求",
+          "status": "succeeded"
+        },
+        {
+          "title": "从 seekdb 读取记忆",
+          "status": "succeeded"
+        },
+        {
+          "title": "决定剧情与 NPC 态度",
+          "status": "succeeded"
+        },
+        {
+          "title": "写入 seekdb 并保存本轮",
+          "status": "succeeded"
+        },
+        {
+          "title": "准备叙事",
+          "status": "succeeded"
+        },
+        {
+          "title": "叙述这个夜晚",
+          "status": "succeeded"
+        },
+        {
+          "title": "展示剧情和可选行动",
+          "status": "succeeded"
+        },
+        {
+          "title": "旅馆的回应",
+          "status": "succeeded"
+        }
+      ]
+    },
+    {
+      "action": "赴约",
+      "status": "succeeded",
+      "elapsed_time": 0.24520279210992157,
+      "outputs": {
+        "reply": "【结局：时光守护者】阿零把旅馆的钟交给你：你修好的不仅是一盏灯，也是我对旅客的信任。\n\n地点：结局 · 阿零：亲切 · 信任：1\n背包：铜钥匙、星灯\n\n可选：入住 / 帮忙 / 捣乱 / 道歉 / 探索 / 赴约 / 回忆 / 重新开始",
+        "mode": "规则剧情"
+      },
+      "nodes": [
+        {
+          "title": "选择你的行动",
+          "status": "succeeded"
+        },
+        {
+          "title": "准备本轮请求",
+          "status": "succeeded"
+        },
+        {
+          "title": "从 seekdb 读取记忆",
+          "status": "succeeded"
+        },
+        {
+          "title": "决定剧情与 NPC 态度",
+          "status": "succeeded"
+        },
+        {
+          "title": "写入 seekdb 并保存本轮",
+          "status": "succeeded"
+        },
+        {
+          "title": "准备叙事",
+          "status": "succeeded"
+        },
+        {
+          "title": "叙述这个夜晚",
+          "status": "succeeded"
+        },
+        {
+          "title": "展示剧情和可选行动",
+          "status": "succeeded"
+        },
+        {
+          "title": "旅馆的回应",
+          "status": "succeeded"
+        }
+      ]
+    }
+  ],
+  "database_rows": "dify_e2e_eab7a496d8\t8\t{\"scene\":\"结局\",\"trust\":1,\"items\":[\"铜钥匙\",\"星灯\"],\"flags\":[\"捣乱\",\"道歉\",\"修灯\"],\"loop\":1}\n1\t入住\n2\t捣乱\n3\t回忆\n4\t道歉\n5\t帮忙\n6\t探索\n7\t探索\n8\t赴约\n",
+  "after_container_restart": {
+    "version": 8,
+    "state": {
+      "scene": "结局",
+      "trust": 1,
+      "items": [
+        "铜钥匙",
+        "星灯"
+      ],
+      "flags": [
+        "捣乱",
+        "道歉",
+        "修灯"
+      ],
+      "loop": 1
+    },
+    "history_count": 3
+  }
+}
