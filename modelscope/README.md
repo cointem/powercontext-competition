@@ -1,9 +1,21 @@
-# 魔搭社区发布包
+# 魔搭社区作品
 
 作品：**周边去哪儿 · 步行地点推荐**（`gaode-nearby-walk`）。
 
-发布文件为 `gaode-nearby-walk.zip`，根目录包含一个 `SKILL.md`，内容与仓库 `gaode/SKILL.md` 一致。已通过 Skill 格式检查及 ZIP 内容核对。名称、功能介绍和使用示例见 `publication.json`。
+已于 2026-10-26 公开发布到 `cointem` 账号：
 
-在 [魔搭 Skills 中心](https://modelscope.cn/skills)登录后选择“新建 Skill”，上传该包并填写介绍。发布后应打开 Skill 页面核对内容，并将**作品的完整链接或编号**提交到大赛“魔搭社区”入口。
+- 作品链接：https://modelscope.cn/skills/cointem/gaode-nearby-walk
+- Skill ID：`cointem/gaode-nearby-walk`
+- 源文件：[gaode/SKILL.md](../gaode/SKILL.md)
 
-当前状态：发布包已准备，尚未上传；因此还没有可提交的魔搭作品链接。
+已验证未登录可访问作品页面，且页面完整展示五步推荐流程。下载发布后的 ZIP，逐字节核对其中的 `SKILL.md`，与仓库源文件一致；SHA-256 为 `cc2cb244606caa8a911ba219fe5f72d35aab1daa12b22f4f0aedc2ab08a44396`。发布信息见 [publication.json](publication.json)。
+
+![公开作品页面](evidence/published.png)
+
+## 发布文件
+
+`gaode-nearby-walk.zip` 为备份发布包，根目录包含一个 `SKILL.md`，已通过格式检查。魔搭网页“自定义创建”入口接收原始项目文件，本次直接上传 `gaode/SKILL.md`；该入口不会自动解压 ZIP。
+
+## 比赛提交
+
+将上面的完整作品链接或 Skill ID 填入大赛“魔搭社区”入口。本仓库已记录发布结果，大赛平台提交尚未执行。

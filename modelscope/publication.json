@@ -10,5 +10,19 @@
   "source": "../gaode/SKILL.md",
   "source_commit": "43f3b64b61c065c75df1763dd0055757a14036e2",
   "skill_sha256": "cc2cb244606caa8a911ba219fe5f72d35aab1daa12b22f4f0aedc2ab08a44396",
-  "status": "prepared; not published"
+  "status": "published",
+  "owner": "cointem",
+  "skill_id": "cointem/gaode-nearby-walk",
+  "url": "https://modelscope.cn/skills/cointem/gaode-nearby-walk",
+  "published_date": "2026-10-26",
+  "visibility": "public",
+  "upload_method": "ModelScope web custom creation; uploaded ../gaode/SKILL.md",
+  "source_url": "https://github.com/cointem/powercontext-competition/blob/2026-competition-ecosystem/gaode/SKILL.md",
+  "verification": {
+    "anonymous_page_access": true,
+    "downloaded_archive_matches_source": true,
+    "published_revision": "01593dfbcf16b1fe463d655a9154c5588a745d96",
+    "screenshot": "evidence/published.png"
+  },
+  "competition_submission_status": "not submitted"
 }
