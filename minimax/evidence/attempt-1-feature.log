@@ -1,0 +1,29 @@
+..........F...                                                           [100%]
+=================================== FAILURES ===================================
+_________________ test_invalid_status_on_empty_input[status4] __________________
+
+status = []
+
+    @pytest.mark.parametrize("status", ["", "PAID", "unknown", 1, [], True])
+    def test_invalid_status_on_empty_input(status):
+        with pytest.raises(ValueError):
+>           list_orders([], status=status)
+
+tests/test_orders_feature.py:23: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+orders = []
+
+    def list_orders(orders, *, customer_id=None, status=None, limit=20):
+        """Return owned orders in ascending ID order, without modifying input."""
+        if isinstance(limit, bool) or not isinstance(limit, int) or limit < 0:
+            raise ValueError("limit must be a non-negative integer")
+>       if status is not None and status not in _VALID_STATUSES:
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: unhashable type: 'list'
+
+orders.py:11: TypeError
+- generated xml file: <RUN>/evidence/attempt-1-feature.xml -
+=========================== short test summary info ============================
+FAILED tests/test_orders_feature.py::test_invalid_status_on_empty_input[status4]
+1 failed, 13 passed in 0.03s

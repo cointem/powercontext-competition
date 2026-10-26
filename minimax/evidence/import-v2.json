@@ -1,0 +1,40 @@
+{
+  "project_id": "sdd-c82d98d6d6774d0697b95b7f734654e0",
+  "documents": [
+    {
+      "path": "orders.py",
+      "kind": "code",
+      "sha256": "d19a9fddb3b7d32f93df9cc6696f5846e9f0f92348caa546b59d9dabb539b77e"
+    },
+    {
+      "path": "data/orders.json",
+      "kind": "data",
+      "sha256": "8706670c292cddd662d7c842ac77ae8cf9b0c1991f4cca00c6544691edca6224"
+    },
+    {
+      "path": "specs/inventory.md",
+      "kind": "spec",
+      "sha256": "bcf88fe6b42a6be1b2497e8188fbbc50218e93256df134d1b89ce69ed67da0d3"
+    },
+    {
+      "path": "specs/orders.md",
+      "kind": "spec",
+      "sha256": "23edf7588501f022b3d73c515f0dc86bdf9058baa17da8412a34a59a86699270"
+    },
+    {
+      "path": "tests/conftest.py",
+      "kind": "test",
+      "sha256": "45d465520845b03b933c5e5b7f51c8bf8926b95a76c5aefea4b99e28e9cee9f3"
+    },
+    {
+      "path": "tests/test_orders_feature.py",
+      "kind": "test",
+      "sha256": "62654fe2c20e2872ab1b3bec87ccb47a92cc3fbb1cba6f914cfe4c2b6f83c8e7"
+    },
+    {
+      "path": "tests/test_orders_regression.py",
+      "kind": "test",
+      "sha256": "cf92c37f4c3c2eb47b6ef8d31d3b97aee1b307cb0973dd5a9d6daaed440dee96"
+    }
+  ]
+}

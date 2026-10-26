@@ -1,0 +1,155 @@
+{
+  "backend": "seekdb",
+  "server_version": "5.7.25-OceanBase seekdb-v1.4.0.0",
+  "sql": "SELECT path,kind,sha256,body,(IF(LOCATE(%s, LOWER(CONCAT(path, ' ', body))) > 0, 1, 0) + IF(LOCATE(%s, LOWER(CONCAT(path, ' ', body))) > 0, 1, 0) + IF(LOCATE(%s, LOWER(CONCAT(path, ' ', body))) > 0, 1, 0) + IF(LOCATE(%s, LOWER(CONCAT(path, ' ', body))) > 0, 1, 0) + IF(LOCATE(%s, LOWER(CONCAT(path, ' ', body))) > 0, 1, 0)) AS relevance FROM sdd_materials WHERE project_id=%s HAVING relevance>0 ORDER BY relevance DESC,path LIMIT 30",
+  "parameters": [
+    "orders",
+    "list_orders",
+    "status",
+    "customer_id",
+    "limit",
+    "sdd-c82d98d6d6774d0697b95b7f734654e0"
+  ],
+  "sources": [
+    {
+      "path": "orders.py",
+      "kind": "code",
+      "sha256": "d19a9fddb3b7d32f93df9cc6696f5846e9f0f92348caa546b59d9dabb539b77e",
+      "body": "\"\"\"Order query used by the warehouse's order list.\"\"\"\n\n\ndef list_orders(orders, *, customer_id=None, status=None, limit=20):\n    \"\"\"Return owned orders in ascending ID order, without modifying input.\"\"\"\n    if isinstance(limit, bool) or not isinstance(limit, int) or limit < 0:\n        raise ValueError(\"limit must be a non-negative integer\")\n    selected = [dict(order) for order in orders\n                if customer_id is None or order[\"customer_id\"] == customer_id]\n    return sorted(selected, key=lambda order: order[\"id\"])[:limit]\n",
+      "relevance": 5,
+      "line_start": 1,
+      "line_end": 10
+    },
+    {
+      "path": "specs/orders.md",
+      "kind": "spec",
+      "sha256": "23edf7588501f022b3d73c515f0dc86bdf9058baa17da8412a34a59a86699270",
+      "body": "# Order query specification — revision 2\n\n## ORD-001: Preserve existing order query behavior\n`orders.py:list_orders` returns dictionaries ordered by ascending integer `id`.\n`customer_id=None` selects all customers; a supplied customer ID selects only that customer.\n`limit` defaults to 20, is a nonnegative integer (not bool), and applies after filtering and sorting.\nInvalid limits raise ValueError. Zero returns an empty list. Do not mutate the input list or its dictionaries.\nNo status filter preserves existing behavior, including legacy orders whose status is absent.\n\n## ORD-002: Add order status filtering\n`status=None` means no status filter. Otherwise accept exactly the strings\n`pending`, `paid`, `shipped`, `cancelled`, `refunded`; filter by exact equality to an order's status.\nOther values (including empty strings, uppercase, integers and lists) raise ValueError,\neven when input is empty. Orders with missing status do not match an explicit filter.\nCombine customer and status filters with AND, then sort, then limit.\n\n## ORD-003: Validation sources\n`tests/test_orders_feature.py` verifies status filtering and invalid input.\n`tests/test_orders_regression.py` preserves customer, ordering, limit and nonmutation contracts.\n\n## ORD-004: Refund support (effective revision 2)\nThe explicit status filter must also accept `refunded`; all ORD-001 behaviors remain unchanged.\n",
+      "relevance": 5,
+      "line_start": 1,
+      "line_end": 22
+    },
+    {
+      "path": "tests/test_orders_feature.py",
+      "kind": "test",
+      "sha256": "62654fe2c20e2872ab1b3bec87ccb47a92cc3fbb1cba6f914cfe4c2b6f83c8e7",
+      "body": "import pytest\nfrom orders import list_orders\n\n\n@pytest.mark.parametrize(\"status,expected\", [\n    (\"pending\", [2]), (\"paid\", [1, 3]), (\"shipped\", [4]), (\"cancelled\", [5])\n])\ndef test_filter_by_status(orders, status, expected):\n    assert [o[\"id\"] for o in list_orders(orders, status=status)] == expected\n\n\ndef test_combine_filters_before_limit(orders):\n    assert [o[\"id\"] for o in list_orders(orders, customer_id=\"alice\", status=\"paid\", limit=1)] == [3]\n\n\ndef test_missing_status_excluded(orders):\n    assert list_orders([orders[-1]], status=\"paid\") == []\n\n\n@pytest.mark.parametrize(\"status\", [\"\", \"PAID\", \"unknown\", 1, [], True])\ndef test_invalid_status_on_empty_input(status):\n    with pytest.raises(ValueError):\n        list_orders([], status=status)\n\n\ndef test_no_matches(orders):\n    assert list_orders(orders, customer_id=\"nobody\", status=\"paid\") == []\n\n\ndef test_updated_spec_refunded_status():\n    items = [{\"id\": 1, \"customer_id\": \"a\", \"status\": \"paid\"},\n             {\"id\": 2, \"customer_id\": \"a\", \"status\": \"refunded\"}]\n    assert list_orders(items, status=\"refunded\") == [items[1]]\n",
+      "relevance": 5,
+      "line_start": 1,
+      "line_end": 33
+    },
+    {
+      "path": "tests/test_orders_regression.py",
+      "kind": "test",
+      "sha256": "cf92c37f4c3c2eb47b6ef8d31d3b97aee1b307cb0973dd5a9d6daaed440dee96",
+      "body": "from copy import deepcopy\nimport pytest\nfrom orders import list_orders\n\n\ndef test_default_and_explicit_none(orders):\n    expected = sorted(orders, key=lambda o: o[\"id\"])\n    assert list_orders(orders) == expected\n    assert list_orders(orders, status=None) == expected\n\n\ndef test_customer_sort_limit(orders):\n    assert [o[\"id\"] for o in list_orders(orders, customer_id=\"alice\", limit=2)] == [2, 3]\n\n\ndef test_zero_and_empty(orders):\n    assert list_orders(orders, limit=0) == []\n    assert list_orders([]) == []\n\n\n@pytest.mark.parametrize(\"limit\", [-1, 1.5, \"2\", True, None])\ndef test_invalid_limit(orders, limit):\n    with pytest.raises(ValueError):\n        list_orders(orders, limit=limit)\n\n\ndef test_input_and_output_isolation(orders):\n    before = deepcopy(orders)\n    output = list_orders(orders)\n    output[0][\"status\"] = \"changed\"\n    assert orders == before\n\n\ndef test_default_limit():\n    items = [{\"id\": i, \"customer_id\": \"a\"} for i in range(30, 0, -1)]\n    assert [o[\"id\"] for o in list_orders(items)] == list(range(1, 21))\n",
+      "relevance": 5,
+      "line_start": 1,
+      "line_end": 36
+    },
+    {
+      "path": "data/orders.json",
+      "kind": "data",
+      "sha256": "8706670c292cddd662d7c842ac77ae8cf9b0c1991f4cca00c6544691edca6224",
+      "body": "[\n  {\"id\": 4, \"customer_id\": \"alice\", \"status\": \"shipped\"},\n  {\"id\": 1, \"customer_id\": \"bob\", \"status\": \"paid\"},\n  {\"id\": 3, \"customer_id\": \"alice\", \"status\": \"paid\"},\n  {\"id\": 2, \"customer_id\": \"alice\", \"status\": \"pending\"},\n  {\"id\": 5, \"customer_id\": \"bob\", \"status\": \"cancelled\"},\n  {\"id\": 6, \"customer_id\": \"alice\"}\n]\n",
+      "relevance": 3,
+      "line_start": 1,
+      "line_end": 8
+    },
+    {
+      "path": "specs/inventory.md",
+      "kind": "spec",
+      "sha256": "bcf88fe6b42a6be1b2497e8188fbbc50218e93256df134d1b89ce69ed67da0d3",
+      "body": "# Inventory specification\nStock reservation is independent of the order query. Negative inventory is forbidden.\nThis document is unrelated to the order status filter task.\n",
+      "relevance": 1,
+      "line_start": 1,
+      "line_end": 3
+    },
+    {
+      "path": "tests/conftest.py",
+      "kind": "test",
+      "sha256": "45d465520845b03b933c5e5b7f51c8bf8926b95a76c5aefea4b99e28e9cee9f3",
+      "body": "import json\nfrom pathlib import Path\n\nimport pytest\n\n\n@pytest.fixture\ndef orders():\n    return json.loads((Path(__file__).parents[1] / \"data/orders.json\").read_text())\n",
+      "relevance": 1,
+      "line_start": 1,
+      "line_end": 9
+    }
+  ],
+  "task_state": {
+    "backend": "PowerContext",
+    "commit": "dab240063bfcfa7917898dc44da4baadb3747bd0",
+    "pid": 71409,
+    "scope_id": "scp_5rcjssr336zghjjsv62vbw5rfs",
+    "state": {
+      "sequence": 2,
+      "task": "orders status filter",
+      "completed": [
+        "Recorded baseline failures",
+        "Imported revision 2, including ORD-004 refunded support"
+      ],
+      "todo": [
+        "Ask MiniMax to modify orders.py",
+        "Run unchanged feature and regression tests"
+      ],
+      "validation": {
+        "before_feature": {
+          "tests": 14,
+          "failures": 13,
+          "errors": 0,
+          "skipped": 0,
+          "command": [
+            "python",
+            "-m",
+            "pytest",
+            "-q",
+            "tests/test_orders_feature.py",
+            "--junitxml=<evidence>"
+          ],
+          "exit_code": 1,
+          "code_sha256": "d19a9fddb3b7d32f93df9cc6696f5846e9f0f92348caa546b59d9dabb539b77e",
+          "tests_sha256": {
+            "conftest.py": "45d465520845b03b933c5e5b7f51c8bf8926b95a76c5aefea4b99e28e9cee9f3",
+            "test_orders_feature.py": "62654fe2c20e2872ab1b3bec87ccb47a92cc3fbb1cba6f914cfe4c2b6f83c8e7",
+            "test_orders_regression.py": "cf92c37f4c3c2eb47b6ef8d31d3b97aee1b307cb0973dd5a9d6daaed440dee96"
+          }
+        },
+        "before_regression": {
+          "tests": 10,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "command": [
+            "python",
+            "-m",
+            "pytest",
+            "-q",
+            "tests/test_orders_regression.py",
+            "--junitxml=<evidence>"
+          ],
+          "exit_code": 0,
+          "code_sha256": "d19a9fddb3b7d32f93df9cc6696f5846e9f0f92348caa546b59d9dabb539b77e",
+          "tests_sha256": {
+            "conftest.py": "45d465520845b03b933c5e5b7f51c8bf8926b95a76c5aefea4b99e28e9cee9f3",
+            "test_orders_feature.py": "62654fe2c20e2872ab1b3bec87ccb47a92cc3fbb1cba6f914cfe4c2b6f83c8e7",
+            "test_orders_regression.py": "cf92c37f4c3c2eb47b6ef8d31d3b97aee1b307cb0973dd5a9d6daaed440dee96"
+          }
+        }
+      }
+    },
+    "citation": {
+      "memory_ref": {
+        "family": "memory",
+        "artifact_id": "memory",
+        "revision": 2
+      },
+      "entry_id": "mem_ent_cdbfe6c7f40844edbb5bf3035801cc35",
+      "entry_version_id": "mem_ver_57cd2c76ed004eb48ab384f0dcfb0120",
+      "text": "sddtaskstate {\"sequence\": 2, \"task\": \"orders status filter\", \"completed\": [\"Recorded baseline failures\", \"Imported revision 2, including ORD-004 refunded support\"], \"todo\": [\"Ask MiniMax to modify orders.py\", \"Run unchanged feature and regression tests\"], \"validation\": {\"before_feature\": {\"tests\": 14, \"failures\": 13, \"errors\": 0, \"skipped\": 0, \"command\": [\"python\", \"-m\", \"pytest\", \"-q\", \"tests/test_orders_feature.py\", \"--junitxml=<evidence>\"], \"exit_code\": 1, \"code_sha256\": \"d19a9fddb3b7d32f93df9cc6696f5846e9f0f92348caa546b59d9dabb539b77e\", \"tests_sha256\": {\"conftest.py\": \"45d465520845b03b933c5e5b7f51c8bf8926b95a76c5aefea4b99e28e9cee9f3\", \"test_orders_feature.py\": \"62654fe2c20e2872ab1b3bec87ccb47a92cc3fbb1cba6f914cfe4c2b6f83c8e7\", \"test_orders_regression.py\": \"cf92c37f4c3c2eb47b6ef8d31d3b97aee1b307cb0973dd5a9d6daaed440dee96\"}}, \"before_regression\": {\"tests\": 10, \"failures\": 0, \"errors\": 0, \"skipped\": 0, \"command\": [\"python\", \"-m\", \"pytest\", \"-q\", \"tests/test_orders_regression.py\", \"--junitxml=<evidence>\"], \"exit_code\": 0, \"code_sha256\": \"d19a9fddb3b7d32f93df9cc6696f5846e9f0f92348caa546b59d9dabb539b77e\", \"tests_sha256\": {\"conftest.py\": \"45d465520845b03b933c5e5b7f51c8bf8926b95a76c5aefea4b99e28e9cee9f3\", \"test_orders_feature.py\": \"62654fe2c20e2872ab1b3bec87ccb47a92cc3fbb1cba6f914cfe4c2b6f83c8e7\", \"test_orders_regression.py\": \"cf92c37f4c3c2eb47b6ef8d31d3b97aee1b307cb0973dd5a9d6daaed440dee96\"}}}}",
+      "score": 0.01639344262295082,
+      "matched_by": [
+        "fts"
+      ]
+    }
+  },
+  "next_action": "Ask MiniMax to modify orders.py"
+}

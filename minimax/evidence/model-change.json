@@ -1,0 +1,6 @@
+{
+  "path": "orders.py",
+  "content": "\"\"\"Order query used by the warehouse's order list.\"\"\"\n\n\n_VALID_STATUSES = {\"pending\", \"paid\", \"shipped\", \"cancelled\", \"refunded\"}\n\n\ndef list_orders(orders, *, customer_id=None, status=None, limit=20):\n    \"\"\"Return owned orders in ascending ID order, without modifying input.\"\"\"\n    if isinstance(limit, bool) or not isinstance(limit, int) or limit < 0:\n        raise ValueError(\"limit must be a non-negative integer\")\n    if status is not None and (\n        not isinstance(status, str) or status not in _VALID_STATUSES\n    ):\n        raise ValueError(\n            \"status must be one of: pending, paid, shipped, cancelled, refunded\"\n        )\n\n    selected = [\n        dict(order)\n        for order in orders\n        if (customer_id is None or order[\"customer_id\"] == customer_id)\n        and (status is None or order.get(\"status\") == status)\n    ]\n    return sorted(selected, key=lambda order: order[\"id\"])[:limit]\n",
+  "summary": "Added validated exact status filtering for all specified statuses, including refunded, combined with customer filtering before sorting and limiting while preserving existing behavior.",
+  "sha256": "3ccb7fc6e611b7e18191c2bcbb01f45ce881da28b56ddba69b49c0ff4db7386e"
+}

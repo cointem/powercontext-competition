@@ -1,0 +1,10 @@
+name: minimax-sdd
+services:
+  seekdb:
+    image: oceanbase/seekdb:1.4.0-100000172026082615
+    ports:
+      - "127.0.0.1:12883:2881"
+    volumes:
+      - seekdb-data:/var/lib/oceanbase
+volumes:
+  seekdb-data:

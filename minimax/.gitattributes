@@ -1,0 +1,4 @@
+# Preserve exact pytest diagnostic spacing and unified-diff context lines.
+evidence/*.log whitespace=-blank-at-eol
+evidence/*.xml whitespace=-blank-at-eol
+evidence/*.diff whitespace=-blank-at-eol

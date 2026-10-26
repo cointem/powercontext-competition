@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="14" time="0.028" timestamp="2026-10-26T23:55:42.335032+08:00" hostname="cointemdeMacBook-Pro.local"><testcase classname="tests.test_orders_feature" name="test_filter_by_status[pending-expected0]" time="0.001" /><testcase classname="tests.test_orders_feature" name="test_filter_by_status[paid-expected1]" time="0.000" /><testcase classname="tests.test_orders_feature" name="test_filter_by_status[shipped-expected2]" time="0.000" /><testcase classname="tests.test_orders_feature" name="test_filter_by_status[cancelled-expected3]" time="0.000" /><testcase classname="tests.test_orders_feature" name="test_combine_filters_before_limit" time="0.000" /><testcase classname="tests.test_orders_feature" name="test_missing_status_excluded" time="0.000" /><testcase classname="tests.test_orders_feature" name="test_invalid_status_on_empty_input[]" time="0.000" /><testcase classname="tests.test_orders_feature" name="test_invalid_status_on_empty_input[PAID]" time="0.000" /><testcase classname="tests.test_orders_feature" name="test_invalid_status_on_empty_input[unknown]" time="0.000" /><testcase classname="tests.test_orders_feature" name="test_invalid_status_on_empty_input[1]" time="0.000" /><testcase classname="tests.test_orders_feature" name="test_invalid_status_on_empty_input[status4]" time="0.000"><failure message="TypeError: unhashable type: 'list'">status = []
+
+    @pytest.mark.parametrize("status", ["", "PAID", "unknown", 1, [], True])
+    def test_invalid_status_on_empty_input(status):
+        with pytest.raises(ValueError):
+&gt;           list_orders([], status=status)
+
+tests/test_orders_feature.py:23: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+orders = []
+
+    def list_orders(orders, *, customer_id=None, status=None, limit=20):
+        """Return owned orders in ascending ID order, without modifying input."""
+        if isinstance(limit, bool) or not isinstance(limit, int) or limit &lt; 0:
+            raise ValueError("limit must be a non-negative integer")
+&gt;       if status is not None and status not in _VALID_STATUSES:
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: unhashable type: 'list'
+
+orders.py:11: TypeError</failure></testcase><testcase classname="tests.test_orders_feature" name="test_invalid_status_on_empty_input[True]" time="0.000" /><testcase classname="tests.test_orders_feature" name="test_no_matches" time="0.000" /><testcase classname="tests.test_orders_feature" name="test_updated_spec_refunded_status" time="0.000" /></testsuite></testsuites>

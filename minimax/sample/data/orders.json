@@ -1,0 +1,8 @@
+[
+  {"id": 4, "customer_id": "alice", "status": "shipped"},
+  {"id": 1, "customer_id": "bob", "status": "paid"},
+  {"id": 3, "customer_id": "alice", "status": "paid"},
+  {"id": 2, "customer_id": "alice", "status": "pending"},
+  {"id": 5, "customer_id": "bob", "status": "cancelled"},
+  {"id": 6, "customer_id": "alice"}
+]

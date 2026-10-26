@@ -1,0 +1,11 @@
+{
+  "previous_source": "\"\"\"Order query used by the warehouse's order list.\"\"\"\n\n\n_VALID_STATUSES = {\"pending\", \"paid\", \"shipped\", \"cancelled\", \"refunded\"}\n\n\ndef list_orders(orders, *, customer_id=None, status=None, limit=20):\n    \"\"\"Return owned orders in ascending ID order, without modifying input.\"\"\"\n    if isinstance(limit, bool) or not isinstance(limit, int) or limit < 0:\n        raise ValueError(\"limit must be a non-negative integer\")\n    if status is not None and status not in _VALID_STATUSES:\n        raise ValueError(\"status must be one of: pending, paid, shipped, cancelled, refunded\")\n\n    selected = [\n        dict(order)\n        for order in orders\n        if (customer_id is None or order[\"customer_id\"] == customer_id)\n        and (status is None or order.get(\"status\") == status)\n    ]\n    return sorted(selected, key=lambda order: order[\"id\"])[:limit]\n",
+  "failure": "test_invalid_status_on_empty_input[status4] passes status=[] and expects ValueError, but set membership raises TypeError: unhashable type: list. Validate types before membership. Keep all tests unchanged.",
+  "tests": {
+    "tests": 14,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "exit_code": 1
+  }
+}

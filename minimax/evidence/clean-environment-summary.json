@@ -1,0 +1,84 @@
+{
+  "mode": "recorded-output replay",
+  "checks": {
+    "runnable": true,
+    "minimax_code_matches": true,
+    "context_and_spec_update": true,
+    "seekdb_retrieval": true,
+    "state_reused_after_restart": true,
+    "same_tests_red_to_green": true
+  },
+  "before_feature": {
+    "tests": 14,
+    "failures": 13,
+    "errors": 0,
+    "skipped": 0,
+    "command": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_orders_feature.py",
+      "--junitxml=<evidence>"
+    ],
+    "exit_code": 1,
+    "code_sha256": "d19a9fddb3b7d32f93df9cc6696f5846e9f0f92348caa546b59d9dabb539b77e",
+    "tests_sha256": {
+      "conftest.py": "45d465520845b03b933c5e5b7f51c8bf8926b95a76c5aefea4b99e28e9cee9f3",
+      "test_orders_feature.py": "62654fe2c20e2872ab1b3bec87ccb47a92cc3fbb1cba6f914cfe4c2b6f83c8e7",
+      "test_orders_regression.py": "cf92c37f4c3c2eb47b6ef8d31d3b97aee1b307cb0973dd5a9d6daaed440dee96"
+    }
+  },
+  "after_feature": {
+    "tests": 14,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "command": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_orders_feature.py",
+      "--junitxml=<evidence>"
+    ],
+    "exit_code": 0,
+    "code_sha256": "3ccb7fc6e611b7e18191c2bcbb01f45ce881da28b56ddba69b49c0ff4db7386e",
+    "tests_sha256": {
+      "conftest.py": "45d465520845b03b933c5e5b7f51c8bf8926b95a76c5aefea4b99e28e9cee9f3",
+      "test_orders_feature.py": "62654fe2c20e2872ab1b3bec87ccb47a92cc3fbb1cba6f914cfe4c2b6f83c8e7",
+      "test_orders_regression.py": "cf92c37f4c3c2eb47b6ef8d31d3b97aee1b307cb0973dd5a9d6daaed440dee96"
+    }
+  },
+  "after_regression": {
+    "tests": 10,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "command": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_orders_regression.py",
+      "--junitxml=<evidence>"
+    ],
+    "exit_code": 0,
+    "code_sha256": "3ccb7fc6e611b7e18191c2bcbb01f45ce881da28b56ddba69b49c0ff4db7386e",
+    "tests_sha256": {
+      "conftest.py": "45d465520845b03b933c5e5b7f51c8bf8926b95a76c5aefea4b99e28e9cee9f3",
+      "test_orders_feature.py": "62654fe2c20e2872ab1b3bec87ccb47a92cc3fbb1cba6f914cfe4c2b6f83c8e7",
+      "test_orders_regression.py": "cf92c37f4c3c2eb47b6ef8d31d3b97aee1b307cb0973dd5a9d6daaed440dee96"
+    }
+  },
+  "state_write_pid": 73907,
+  "state_read_pid": 73909,
+  "python": "3.12.14",
+  "packages": {
+    "powercontext": "1.2.1.dev2+gdab240063",
+    "PyMySQL": "1.1.1",
+    "httpx": "0.28.1",
+    "pytest": "8.4.2"
+  },
+  "seekdb_version": "5.7.25-OceanBase seekdb-v1.4.0.0"
+}

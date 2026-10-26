@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="13" skipped="0" tests="14" time="0.040" timestamp="2026-10-26T23:53:06.441697+08:00" hostname="cointemdeMacBook-Pro.local"><testcase classname="tests.test_orders_feature" name="test_filter_by_status[pending-expected0]" time="0.001"><failure message="assert [1, 2, 3, 4, 5, 6] == [2]&#10;  &#10;  At index 0 diff: 1 != 2&#10;  Left contains 5 more items, first extra item: 2&#10;  Use -v to get more diff">orders = [{'customer_id': 'alice', 'id': 4, 'status': 'shipped'}, {'customer_id': 'bob', 'id': 1, 'status': 'paid'}, {'customer...d': 2, 'status': 'pending'}, {'customer_id': 'bob', 'id': 5, 'status': 'cancelled'}, {'customer_id': 'alice', 'id': 6}]
+status = 'pending', expected = [2]
+
+    @pytest.mark.parametrize("status,expected", [
+        ("pending", [2]), ("paid", [1, 3]), ("shipped", [4]), ("cancelled", [5])
+    ])
+    def test_filter_by_status(orders, status, expected):
+&gt;       assert [o["id"] for o in list_orders(orders, status=status)] == expected
+E       assert [1, 2, 3, 4, 5, 6] == [2]
+E         
+E         At index 0 diff: 1 != 2
+E         Left contains 5 more items, first extra item: 2
+E         Use -v to get more diff
+
+tests/test_orders_feature.py:9: AssertionError</failure></testcase><testcase classname="tests.test_orders_feature" name="test_filter_by_status[paid-expected1]" time="0.000"><failure message="assert [1, 2, 3, 4, 5, 6] == [1, 3]&#10;  &#10;  At index 1 diff: 2 != 3&#10;  Left contains 4 more items, first extra item: 3&#10;  Use -v to get more diff">orders = [{'customer_id': 'alice', 'id': 4, 'status': 'shipped'}, {'customer_id': 'bob', 'id': 1, 'status': 'paid'}, {'customer...d': 2, 'status': 'pending'}, {'customer_id': 'bob', 'id': 5, 'status': 'cancelled'}, {'customer_id': 'alice', 'id': 6}]
+status = 'paid', expected = [1, 3]
+
+    @pytest.mark.parametrize("status,expected", [
+        ("pending", [2]), ("paid", [1, 3]), ("shipped", [4]), ("cancelled", [5])
+    ])
+    def test_filter_by_status(orders, status, expected):
+&gt;       assert [o["id"] for o in list_orders(orders, status=status)] == expected
+E       assert [1, 2, 3, 4, 5, 6] == [1, 3]
+E         
+E         At index 1 diff: 2 != 3
+E         Left contains 4 more items, first extra item: 3
+E         Use -v to get more diff
+
+tests/test_orders_feature.py:9: AssertionError</failure></testcase><testcase classname="tests.test_orders_feature" name="test_filter_by_status[shipped-expected2]" time="0.001"><failure message="assert [1, 2, 3, 4, 5, 6] == [4]&#10;  &#10;  At index 0 diff: 1 != 4&#10;  Left contains 5 more items, first extra item: 2&#10;  Use -v to get more diff">orders = [{'customer_id': 'alice', 'id': 4, 'status': 'shipped'}, {'customer_id': 'bob', 'id': 1, 'status': 'paid'}, {'customer...d': 2, 'status': 'pending'}, {'customer_id': 'bob', 'id': 5, 'status': 'cancelled'}, {'customer_id': 'alice', 'id': 6}]
+status = 'shipped', expected = [4]
+
+    @pytest.mark.parametrize("status,expected", [
+        ("pending", [2]), ("paid", [1, 3]), ("shipped", [4]), ("cancelled", [5])
+    ])
+    def test_filter_by_status(orders, status, expected):
+&gt;       assert [o["id"] for o in list_orders(orders, status=status)] == expected
+E       assert [1, 2, 3, 4, 5, 6] == [4]
+E         
+E         At index 0 diff: 1 != 4
+E         Left contains 5 more items, first extra item: 2
+E         Use -v to get more diff
+
+tests/test_orders_feature.py:9: AssertionError</failure></testcase><testcase classname="tests.test_orders_feature" name="test_filter_by_status[cancelled-expected3]" time="0.000"><failure message="assert [1, 2, 3, 4, 5, 6] == [5]&#10;  &#10;  At index 0 diff: 1 != 5&#10;  Left contains 5 more items, first extra item: 2&#10;  Use -v to get more diff">orders = [{'customer_id': 'alice', 'id': 4, 'status': 'shipped'}, {'customer_id': 'bob', 'id': 1, 'status': 'paid'}, {'customer...d': 2, 'status': 'pending'}, {'customer_id': 'bob', 'id': 5, 'status': 'cancelled'}, {'customer_id': 'alice', 'id': 6}]
+status = 'cancelled', expected = [5]
+
+    @pytest.mark.parametrize("status,expected", [
+        ("pending", [2]), ("paid", [1, 3]), ("shipped", [4]), ("cancelled", [5])
+    ])
+    def test_filter_by_status(orders, status, expected):
+&gt;       assert [o["id"] for o in list_orders(orders, status=status)] == expected
+E       assert [1, 2, 3, 4, 5, 6] == [5]
+E         
+E         At index 0 diff: 1 != 5
+E         Left contains 5 more items, first extra item: 2
+E         Use -v to get more diff
+
+tests/test_orders_feature.py:9: AssertionError</failure></testcase><testcase classname="tests.test_orders_feature" name="test_combine_filters_before_limit" time="0.000"><failure message="assert [2] == [3]&#10;  &#10;  At index 0 diff: 2 != 3&#10;  Use -v to get more diff">orders = [{'customer_id': 'alice', 'id': 4, 'status': 'shipped'}, {'customer_id': 'bob', 'id': 1, 'status': 'paid'}, {'customer...d': 2, 'status': 'pending'}, {'customer_id': 'bob', 'id': 5, 'status': 'cancelled'}, {'customer_id': 'alice', 'id': 6}]
+
+    def test_combine_filters_before_limit(orders):
+&gt;       assert [o["id"] for o in list_orders(orders, customer_id="alice", status="paid", limit=1)] == [3]
+E       assert [2] == [3]
+E         
+E         At index 0 diff: 2 != 3
+E         Use -v to get more diff
+
+tests/test_orders_feature.py:13: AssertionError</failure></testcase><testcase classname="tests.test_orders_feature" name="test_missing_status_excluded" time="0.000"><failure message="AssertionError: assert [{'customer_i...ce', 'id': 6}] == []&#10;  &#10;  Left contains one more item: {'customer_id': 'alice', 'id': 6}&#10;  Use -v to get more diff">orders = [{'customer_id': 'alice', 'id': 4, 'status': 'shipped'}, {'customer_id': 'bob', 'id': 1, 'status': 'paid'}, {'customer...d': 2, 'status': 'pending'}, {'customer_id': 'bob', 'id': 5, 'status': 'cancelled'}, {'customer_id': 'alice', 'id': 6}]
+
+    def test_missing_status_excluded(orders):
+&gt;       assert list_orders([orders[-1]], status="paid") == []
+E       AssertionError: assert [{'customer_i...ce', 'id': 6}] == []
+E         
+E         Left contains one more item: {'customer_id': 'alice', 'id': 6}
+E         Use -v to get more diff
+
+tests/test_orders_feature.py:17: AssertionError</failure></testcase><testcase classname="tests.test_orders_feature" name="test_invalid_status_on_empty_input[]" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">status = ''
+
+    @pytest.mark.parametrize("status", ["", "PAID", "unknown", 1, [], True])
+    def test_invalid_status_on_empty_input(status):
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+tests/test_orders_feature.py:22: Failed</failure></testcase><testcase classname="tests.test_orders_feature" name="test_invalid_status_on_empty_input[PAID]" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">status = 'PAID'
+
+    @pytest.mark.parametrize("status", ["", "PAID", "unknown", 1, [], True])
+    def test_invalid_status_on_empty_input(status):
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+tests/test_orders_feature.py:22: Failed</failure></testcase><testcase classname="tests.test_orders_feature" name="test_invalid_status_on_empty_input[unknown]" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">status = 'unknown'
+
+    @pytest.mark.parametrize("status", ["", "PAID", "unknown", 1, [], True])
+    def test_invalid_status_on_empty_input(status):
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+tests/test_orders_feature.py:22: Failed</failure></testcase><testcase classname="tests.test_orders_feature" name="test_invalid_status_on_empty_input[1]" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">status = 1
+
+    @pytest.mark.parametrize("status", ["", "PAID", "unknown", 1, [], True])
+    def test_invalid_status_on_empty_input(status):
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+tests/test_orders_feature.py:22: Failed</failure></testcase><testcase classname="tests.test_orders_feature" name="test_invalid_status_on_empty_input[status4]" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">status = []
+
+    @pytest.mark.parametrize("status", ["", "PAID", "unknown", 1, [], True])
+    def test_invalid_status_on_empty_input(status):
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+tests/test_orders_feature.py:22: Failed</failure></testcase><testcase classname="tests.test_orders_feature" name="test_invalid_status_on_empty_input[True]" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'ValueError'&gt;">status = True
+
+    @pytest.mark.parametrize("status", ["", "PAID", "unknown", 1, [], True])
+    def test_invalid_status_on_empty_input(status):
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE &lt;class 'ValueError'&gt;
+
+tests/test_orders_feature.py:22: Failed</failure></testcase><testcase classname="tests.test_orders_feature" name="test_no_matches" time="0.000" /><testcase classname="tests.test_orders_feature" name="test_updated_spec_refunded_status" time="0.000"><failure message="AssertionError: assert [{'customer_i...: 'refunded'}] == [{'customer_i...: 'refunded'}]&#10;  &#10;  At index 0 diff: {'id': 1, 'customer_id': 'a', 'status': 'paid'} != {'id': 2, 'customer_id': 'a', 'status': 'refunded'}&#10;  Left contains one more item: {'customer_id': 'a', 'id': 2, 'status': 'refunded'}&#10;  Use -v to get more diff">def test_updated_spec_refunded_status():
+        items = [{"id": 1, "customer_id": "a", "status": "paid"},
+                 {"id": 2, "customer_id": "a", "status": "refunded"}]
+&gt;       assert list_orders(items, status="refunded") == [items[1]]
+E       AssertionError: assert [{'customer_i...: 'refunded'}] == [{'customer_i...: 'refunded'}]
+E         
+E         At index 0 diff: {'id': 1, 'customer_id': 'a', 'status': 'paid'} != {'id': 2, 'customer_id': 'a', 'status': 'refunded'}
+E         Left contains one more item: {'customer_id': 'a', 'id': 2, 'status': 'refunded'}
+E         Use -v to get more diff
+
+tests/test_orders_feature.py:33: AssertionError</failure></testcase></testsuite></testsuites>
