@@ -1,5 +1,7 @@
 # PowerContext 2026 参赛实现
 
+证据选择与 PDF 检索的质量指标、回归场景及复现命令见[质量验证](competition-quality.md)。
+
 参赛仓库：<https://github.com/cointem/powercontext-competition>。实现分支为 `2026-competition`。
 保留官方提交历史，包含冻结基线 `9db1753434162c0aa7c9f1189a1722e617880a52`。
 实现基于官方 `2026-competition` 分支提交 `dab240063bfcfa7917898dc44da4baadb3747bd0`。

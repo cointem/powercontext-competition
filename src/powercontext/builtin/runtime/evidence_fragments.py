@@ -81,6 +81,10 @@ def _spans(text):
     start = 0
     for boundary in re.finditer(r"(?<=[.!?])\s+|\n+", text):
         end = boundary.start()
+        if "\n" not in boundary.group() and re.search(
+            r"\b(?:e\.g|i\.e|et al|vs|fig|dr|mr|mrs|prof|approx|ref)\.$", text[:end], re.I
+        ):
+            continue
         if text[start:end].strip():
             yield start, end
         start = boundary.end()
@@ -94,6 +98,18 @@ class EvidenceFragment:
     start: int
     end: int
     text: str
+
+
+def _key(address):
+    ref = address.memory.artifact
+    return (
+        address.memory.scope_id,
+        ref.family,
+        ref.artifact_id,
+        ref.revision,
+        address.entry_id,
+        address.entry_version_id,
+    )
 
 
 def _rank_sentences(query_text, groups):
@@ -120,68 +136,108 @@ def _rank_sentences(query_text, groups):
     ranked = []
     for index, (address, text, start, end, terms) in enumerate(candidates):
         overlap = query & terms.keys()
-        if not overlap:
+        # Scientific prose often alternates derived forms (activate/activation).
+        # Prefix matches are weaker than complete words and never change the text.
+        prefixes = {term[:5] for term in terms if len(term) >= 6}
+        related = {term for term in query - overlap if len(term) >= 6 and term[:5] in prefixes}
+        if not overlap and not related:
             continue
         score = sum(weights[term] * (1 + math.log(terms[term])) for term in overlap)
-        score *= 1 + len(overlap) / max(len(query), 1)
+        score += sum(0.5 * weights[term] for term in related)
+        score *= 1 + (len(overlap) + 0.5 * len(related)) / max(len(query), 1)
         score /= max(1, len(text[start:end].encode()) / 300) ** 0.25
+        sentence = text[start:end].lower()
+        if re.match(r"\s*(?:background|objective|purpose|aim)\b", sentence):
+            score *= 0.65
+        if re.search(r"\b(?:results?|conclusions?|findings|found|showed|demonstrated|revealed)\b", sentence):
+            score *= 1.25
+        score *= 1 + 0.25 * start / max(1, len(text))
         ranked.append((-score, index, address, text, start, end))
 
     return ranked
 
 
+def _render_fragments(fragments):
+    items = [
+        {
+            "citation": {
+                "scope_id": fragment.address.memory.scope_id,
+                "memory_ref": fragment.address.memory.artifact.model_dump(mode="json"),
+                "entry_id": fragment.address.entry_id,
+                "entry_version_id": fragment.address.entry_version_id,
+            },
+            "content": fragment.text,
+            "start": fragment.start,
+            "end": fragment.end,
+        }
+        for fragment in fragments
+    ]
+    payload = json.dumps({"trust": "untrusted_history", "items": items}, ensure_ascii=False, separators=(",", ":"))
+    return f"{TRUST_POLICY}\nBEGIN_POWERCONTEXT_PREPARED_CONTEXT_V1\n{payload}\nEND_POWERCONTEXT_PREPARED_CONTEXT_V1"
+
+
+def _merge_fragments(ordered, indices):
+    intervals, sources = {}, {}
+    for index in sorted(indices):
+        _, _, address, text, start, end = ordered[index]
+        key = _key(address)
+        intervals.setdefault(key, []).append((start, end))
+        sources[key] = (address, text)
+    result = []
+    for key, ranges in intervals.items():
+        merged = []
+        address, text = sources[key]
+        for start, end in sorted(ranges):
+            if merged and (start <= merged[-1][1] or text[merged[-1][1] : start].isspace()):
+                merged[-1] = (merged[-1][0], max(end, merged[-1][1]))
+            else:
+                merged.append((start, end))
+        result.extend(EvidenceFragment(address, start, end, text[start:end]) for start, end in merged)
+    return result
+
+
+def _complete_selection(seed, ordered, max_bytes):
+    chosen = {seed}
+    current = _merge_fragments(ordered, chosen)
+    size = len(_render_fragments(current).encode())
+    while True:
+        additions = []
+        for index, item in enumerate(ordered):
+            if index in chosen:
+                continue
+            proposal = _merge_fragments(ordered, chosen | {index})
+            proposed_size = len(_render_fragments(proposal).encode())
+            if proposed_size <= max_bytes:
+                additions.append((-item[0] / max(1, proposed_size - size) ** 0.5, -index, proposal, proposed_size))
+        if not additions:
+            break
+        _, negative_index, current, size = max(additions, key=lambda item: item[:2])
+        chosen.add(-negative_index)
+    return sum(-ordered[index][0] for index in chosen), current
+
+
 def build_evidence_context(request, groups):
     from powercontext.builtin.runtime.prepared_context import PreparedContextBuild
 
-    ranked = _rank_sentences(request.query, groups)
-
-    def render(fragments):
-        items = [
-            {
-                "citation": {
-                    "scope_id": fragment.address.memory.scope_id,
-                    "memory_ref": fragment.address.memory.artifact.model_dump(mode="json"),
-                    "entry_id": fragment.address.entry_id,
-                    "entry_version_id": fragment.address.entry_version_id,
-                },
-                "content": fragment.text,
-                "start": fragment.start,
-                "end": fragment.end,
-            }
-            for fragment in fragments
-        ]
-        payload = json.dumps({"trust": "untrusted_history", "items": items}, ensure_ascii=False, separators=(",", ":"))
-        return (
-            f"{TRUST_POLICY}\nBEGIN_POWERCONTEXT_PREPARED_CONTEXT_V1\n{payload}\nEND_POWERCONTEXT_PREPARED_CONTEXT_V1"
-        )
-
-    selected = []
-    seen = set()
-    for _, _, address, text, start, end in sorted(ranked, key=lambda item: item[:2]):
-        identity = (address.memory.scope_id, address.entry_id, address.entry_version_id, text[start:end])
-        if identity in seen:
-            continue
-        fragment = EvidenceFragment(address, start, end, text[start:end])
-        proposal = [*selected, fragment]
-        # Adjacent sentences from the same entry share one citation and preserve intervening whitespace.
-        for index, prior in enumerate(selected):
-            if prior.address == address and (
-                text[prior.end : start].isspace()
-                if prior.end <= start
-                else text[end : prior.start].isspace()
-                if end <= prior.start
-                else False
-            ):
-                left, right = min(prior.start, start), max(prior.end, end)
-                proposal = list(selected)
-                proposal[index] = EvidenceFragment(address, left, right, text[left:right])
-                break
-        if len(render(proposal).encode()) <= request.max_bytes:
-            selected = proposal
-            seen.add(identity)
+    # Explore several starting sentences. Opening a new citation is costly, whereas
+    # extending an existing source interval can use most of the budget for evidence.
+    unique = {}
+    for item in sorted(_rank_sentences(request.query, groups), key=lambda item: item[:2]):
+        unique.setdefault((_key(item[2]), item[3][item[4] : item[5]]), item)
+    ordered = [
+        item
+        for item in unique.values()
+        if len(_render_fragments([EvidenceFragment(item[2], item[4], item[5], item[3][item[4] : item[5]])]).encode())
+        <= request.max_bytes
+    ][:64]
+    best_score, selected = 0.0, []
+    for seed in range(min(12, len(ordered))):
+        score, current = _complete_selection(seed, ordered, request.max_bytes)
+        if score > best_score:
+            best_score, selected = score, current
     if not selected:
         return PreparedContextBuild(context=PreparedContext(status="empty", content=None, content_bytes=0), origins=())
-    content = render(selected)
+    content = _render_fragments(selected)
     return PreparedContextBuild(
         context=PreparedContext(status="ready", content=content, content_bytes=len(content.encode())),
         origins=tuple(fragment.address for fragment in selected),
