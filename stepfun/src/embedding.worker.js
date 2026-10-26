@@ -45,9 +45,11 @@ self.onmessage = ({ data }) => {
     try {
       const info = await load(data.options);
       if (!data.texts) { self.postMessage({ id: data.id, info }); return; }
+      const batchSize = data.batchSize ?? (info.backend === 'webgpu' ? 8 : 1);
+      if (!Number.isInteger(batchSize) || batchSize < 1) throw new Error('批大小必须为正整数');
       const vectors = [], t = performance.now();
-      for (let i = 0; i < data.texts.length; i += data.batchSize) {
-        const tensor = await extractor(data.texts.slice(i, i + data.batchSize), { pooling: 'mean', normalize: true });
+      for (let i = 0; i < data.texts.length; i += batchSize) {
+        const tensor = await extractor(data.texts.slice(i, i + batchSize), { pooling: 'mean', normalize: true });
         vectors.push(...tensor.tolist());
         self.postMessage({ progress: { status: 'embedding', done: vectors.length, total: data.texts.length } });
       }
