@@ -1,0 +1,14 @@
+{
+  "name": "gaode-nearby-walk",
+  "display_name": "周边去哪儿 · 步行地点推荐",
+  "description": "根据起点、地点类型和步行时间上限，通过高德 MCP 搜索并核实路线，推荐最多三个符合条件的周边地点。",
+  "examples": [
+    "我在杭州西湖文化广场，想找步行 15 分钟内的咖啡馆，优先近一点，推荐 3 家。",
+    "从给定坐标出发，找步行少于 20 分钟的公园，返回地址、步行距离和时间。"
+  ],
+  "requirements": "使用者的 Agent 环境已配置高德 MCP server。",
+  "source": "../gaode/SKILL.md",
+  "source_commit": "43f3b64b61c065c75df1763dd0055757a14036e2",
+  "skill_sha256": "cc2cb244606caa8a911ba219fe5f72d35aab1daa12b22f4f0aedc2ab08a44396",
+  "status": "prepared; not published"
+}
