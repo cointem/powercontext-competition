@@ -86,7 +86,7 @@ def _spans(text):
         ):
             continue
         if text[start:end].strip():
-            yield start, end
+            yield start, boundary.end()
         start = boundary.end()
     if text[start:].strip():
         yield start, len(text)
@@ -132,7 +132,7 @@ def _rank_sentences(query_text, groups):
             for start, end in _spans(hit.text):
                 candidates.append((address, hit.text, start, end, Counter(_terms(hit.text[start:end]))))
     df = Counter(term for terms in document_terms for term in terms)
-    weights = {term: 1 + math.log((len(document_terms) + 1) / (df[term] + 1)) for term in query}
+    weights = {term: math.log(1 + (len(document_terms) - df[term] + 0.5) / (df[term] + 0.5)) for term in query}
     ranked = []
     for index, (address, text, start, end, terms) in enumerate(candidates):
         overlap = query & terms.keys()
@@ -143,8 +143,8 @@ def _rank_sentences(query_text, groups):
         if not overlap and not related:
             continue
         score = sum(weights[term] * (1 + math.log(terms[term])) for term in overlap)
-        score += sum(0.5 * weights[term] for term in related)
-        score *= 1 + (len(overlap) + 0.5 * len(related)) / max(len(query), 1)
+        score += sum(0.75 * weights[term] for term in related)
+        score *= 1 + (len(overlap) + 0.75 * len(related)) / max(len(query), 1)
         score /= max(1, len(text[start:end].encode()) / 300) ** 0.25
         sentence = text[start:end].lower()
         if re.match(r"\s*(?:background|objective|purpose|aim)\b", sentence):
@@ -196,47 +196,123 @@ def _merge_fragments(ordered, indices):
     return result
 
 
-def _complete_selection(seed, ordered, max_bytes):
-    chosen = {seed}
-    current = _merge_fragments(ordered, chosen)
-    size = len(_render_fragments(current).encode())
-    while True:
-        additions = []
-        for index, item in enumerate(ordered):
-            if index in chosen:
+def _put_state(states, key, value):
+    if key not in states or value[0] > states[key][0]:
+        states[key] = value
+
+
+def _prune_states(states):
+    # For the same open/closed interval state, a more expensive selection with
+    # no greater utility can never improve any subsequent continuation.
+    result = {}
+    for active in (False, True):
+        best = -1.0
+        for key in sorted(key for key in states if key[1] == active):
+            if states[key][0] > best:
+                result[key] = states[key]
+                best = states[key][0]
+    return result
+
+
+def _choose_fragments(groups, ranked, max_bytes):
+    """Exact byte-budget packing, including the cost saved by adjacent intervals."""
+    from powercontext.builtin.runtime.prepared_context import MemoryEntryAddress
+
+    scores = {(_key(row[2]), row[4], row[5]): -row[0] for row in ranked}
+    base = len(_render_fragments([]).encode())
+    # Charge a comma per item and refund the first comma at the outer envelope.
+    limit = max_bytes - base + 1
+    states = {(0, False): (0.0, ())}
+    items = []
+    seen = set()
+    for group in groups:
+        if group.memory_ref is None:
+            continue
+        for hit in group.hits:
+            address = MemoryEntryAddress(
+                memory=ArtifactAddress(scope_id=group.scope_id, artifact=group.memory_ref),
+                entry_id=hit.entry_id,
+                entry_version_id=hit.entry_version_id,
+            )
+            if _key(address) in seen:
                 continue
-            proposal = _merge_fragments(ordered, chosen | {index})
-            proposed_size = len(_render_fragments(proposal).encode())
-            if proposed_size <= max_bytes:
-                additions.append((-item[0] / max(1, proposed_size - size) ** 0.5, -index, proposal, proposed_size))
+            seen.add(_key(address))
+            closed = {}
+            for (cost, _), value in states.items():
+                _put_state(closed, (cost, False), value)
+            states = _prune_states(closed)
+            previous_end = 0
+            for start, end in _spans(hit.text):
+                index = len(items)
+                value = scores.get((_key(address), start, end), 0.0)
+                items.append((-value, index, address, hit.text, start, end))
+                fragment = EvidenceFragment(address, start, end, hit.text[start:end])
+                opening = len(_render_fragments([fragment]).encode()) - base + 1
+                extension = (
+                    len(json.dumps(hit.text[previous_end:end], ensure_ascii=False).encode())
+                    - 2
+                    + len(str(end))
+                    - len(str(previous_end))
+                )
+                next_states = {}
+                for (used, active), (score, chosen) in states.items():
+                    _put_state(next_states, (used, False), (score, chosen))
+                    cost = used + (extension if active else opening)
+                    if cost <= limit:
+                        _put_state(next_states, (cost, True), (score + value, (*chosen, index)))
+                states = _prune_states(next_states)
+                previous_end = end
+    _, chosen = max(states.values(), key=lambda value: value[0])
+    return _merge_fragments(items, chosen)
+
+
+def _expand_fragments(selected, ranked, max_bytes):
+    """Spend residual bytes on adjacent original words, without opening a citation."""
+    sources = {_key(row[2]): row[3] for row in ranked}
+    while selected:
+        additions = []
+        for index, fragment in enumerate(selected):
+            text = sources[_key(fragment.address)]
+            neighbors = []
+            before = re.search(r"\S+\s*$", text[: fragment.start])
+            after = re.match(r"\s*\S+\s*", text[fragment.end :])
+            if before:
+                neighbors.append((before.start(), fragment.end))
+            if after:
+                neighbors.append((fragment.start, fragment.end + after.end()))
+            for start, end in neighbors:
+                proposal = list(selected)
+                proposal[index] = EvidenceFragment(fragment.address, start, end, text[start:end])
+                # Expansion can join two intervals and release a second citation.
+                items = [(0, i, f.address, sources[_key(f.address)], f.start, f.end) for i, f in enumerate(proposal)]
+                proposal = _merge_fragments(items, range(len(items)))
+                size = len(_render_fragments(proposal).encode())
+                if size > max_bytes:
+                    continue
+                added_start, added_end = (start, fragment.start) if start < fragment.start else (fragment.end, end)
+                score = max(
+                    (
+                        -item[0]
+                        for item in ranked
+                        if _key(item[2]) == _key(fragment.address) and item[4] < added_end and added_start < item[5]
+                    ),
+                    default=0,
+                )
+                additions.append((score, -index, proposal))
         if not additions:
             break
-        _, negative_index, current, size = max(additions, key=lambda item: item[:2])
-        chosen.add(-negative_index)
-    return sum(-ordered[index][0] for index in chosen), current
+        selected = max(additions, key=lambda item: item[:2])[2]
+    return selected
 
 
 def build_evidence_context(request, groups):
     from powercontext.builtin.runtime.prepared_context import PreparedContextBuild
 
-    # Explore several starting sentences. Opening a new citation is costly, whereas
-    # extending an existing source interval can use most of the budget for evidence.
-    unique = {}
-    for item in sorted(_rank_sentences(request.query, groups), key=lambda item: item[:2]):
-        unique.setdefault((_key(item[2]), item[3][item[4] : item[5]]), item)
-    ordered = [
-        item
-        for item in unique.values()
-        if len(_render_fragments([EvidenceFragment(item[2], item[4], item[5], item[3][item[4] : item[5]])]).encode())
-        <= request.max_bytes
-    ][:64]
-    best_score, selected = 0.0, []
-    for seed in range(min(12, len(ordered))):
-        score, current = _complete_selection(seed, ordered, request.max_bytes)
-        if score > best_score:
-            best_score, selected = score, current
+    ranked = _rank_sentences(request.query, groups)
+    selected = _choose_fragments(groups, ranked, request.max_bytes)
     if not selected:
         return PreparedContextBuild(context=PreparedContext(status="empty", content=None, content_bytes=0), origins=())
+    selected = _expand_fragments(selected, ranked, request.max_bytes)
     content = _render_fragments(selected)
     return PreparedContextBuild(
         context=PreparedContext(status="ready", content=content, content_bytes=len(content.encode())),

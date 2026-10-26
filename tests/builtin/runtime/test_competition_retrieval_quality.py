@@ -80,6 +80,61 @@ def test_abbreviation_does_not_cut_a_scientific_evidence_sentence():
     assert result.fragments[0].text == text
 
 
+def test_evidence_keeps_trailing_whitespace_inside_the_original_interval():
+    evidence = "Results: Cobalt calibration was stable at 37 degrees.   \n\n"
+    text = "Background: Administrative procedures. " + evidence + "Methods: " + "general notes " * 150
+    result = _prepare("cobalt calibration degrees", (text,), budget=800)
+    covered = {i for fragment in result.fragments for i in range(fragment.start, fragment.end)}
+    start = text.index(evidence)
+    assert all(i in covered for i in range(start, start + len(evidence)))
+    assert result.context.content_bytes == len(result.context.content.encode()) <= 800
+
+
+def test_budget_can_join_evidence_across_a_sentence_without_query_words():
+    text = "Cobalt sensor readings increased. This value was 37 degrees. Calibration remained stable."
+    result = _prepare("cobalt sensor calibration stable", (text,), budget=750)
+    assert len(result.fragments) == 1
+    assert result.fragments[0].text == text
+    assert result.context.content_bytes == len(result.context.content.encode()) <= 750
+
+
+def test_evidence_budget_counts_unicode_quotes_and_preserves_artifact_identity():
+    texts = {
+        "first": '海洋 cobalt measurements: "37°C". Results: calibration stayed stable. \n' * 4,
+        "second": '海洋 amber measurements: "19°C". Results: pressure stayed stable. \n' * 4,
+    }
+    groups = []
+    for artifact_id, text in texts.items():
+        ref = ArtifactRef(family="memory", artifact_id=artifact_id, revision=3)
+        groups.append(
+            PreparedMemoryCandidates(
+                scope_id="quality",
+                memory_ref=ref,
+                hits=(
+                    MemoryHit(
+                        memory_ref=ref,
+                        entry_id="shared",
+                        entry_version_id="same-version",
+                        text=text,
+                        score=1.0,
+                        matched_by=("fts",),
+                    ),
+                ),
+            )
+        )
+    for budget in (600, 750, 900, 1200, 1400, 1800):
+        result = PreparedContextBuilder().build_scopes_result(
+            request=PrepareContextRequest(query="cobalt amber measurements", max_bytes=budget, evidence_selection=True),
+            current_scope_id="quality",
+            memory_candidates=tuple(groups),
+        )
+        assert result.context.content_bytes == len((result.context.content or "").encode()) <= budget
+        assert result.origins == tuple(fragment.address for fragment in result.fragments)
+        for fragment in result.fragments:
+            source = texts[fragment.address.memory.artifact.artifact_id]
+            assert fragment.text == source[fragment.start : fragment.end]
+
+
 class _PagePipeline:
     async def extract(self, request, /):
         return tuple(

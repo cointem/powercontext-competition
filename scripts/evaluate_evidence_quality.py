@@ -25,16 +25,28 @@ import re
 from powercontext.builtin.artifacts.memory import MemoryEntryInput, MemoryHit
 from powercontext.builtin.runtime import (
     BuiltinConfig,
+    CaptureSource,
     PrepareContextRequest,
-    RememberMemoryRequest,
+    SearchMemoryRequest,
     open_builtin_runtime,
 )
 from powercontext.builtin.runtime.prepared_context import PreparedContextBuilder, PreparedMemoryCandidates
 from powercontext.builtin.runtime.prepared_text import TRUST_POLICY
 from powercontext.builtin.scope import ScopeDraft
+from powercontext.builtin.sources import ContentSource
+
+
+class LiteralPipeline:
+    async def extract(self, request, /):
+        return tuple(
+            MemoryEntryInput(kind="document", text=s.content, sources=(s,))
+            for s in request.sources
+            if isinstance(s, ContentSource)
+        )
+
 
 parser = argparse.ArgumentParser(
-    description="Evaluate literal evidence selection with public SciFact annotations and real Memory entries. Labels are used only for input construction and scoring."
+    description="Evaluate literal evidence selection with public SciFact annotations through real capture, flush and search. Labels are used only for input construction and scoring."
 )
 parser.add_argument(
     "--data", type=pathlib.Path, required=True, help="Directory containing corpus.jsonl and claims_<split>.jsonl"
@@ -66,7 +78,7 @@ def render(gold):
 
 async def run():  # noqa: C901 - Construct real scopes, measure both budgets, and aggregate the dataset.
     rows = []
-    async with open_builtin_runtime(BuiltinConfig()) as runtime:
+    async with open_builtin_runtime(BuiltinConfig(), candidate_pipeline=LiteralPipeline()) as runtime:
         if runtime.scopes is None:
             raise RuntimeError("Scope service is required")  # noqa: TRY003
         for claim in claims:
@@ -90,9 +102,12 @@ async def run():  # noqa: C901 - Construct real scopes, measure both budgets, an
             )
             memory = runtime.memory.for_scope(scope.scope_id)
             texts = {key: " ".join(corpus[key]["abstract"]) for key in ids}
-            await memory.remember(
-                RememberMemoryRequest(entries=tuple(MemoryEntryInput(kind="document", text=texts[key]) for key in ids))
-            )
+            for key in ids:
+                await runtime.sources.for_scope(scope.scope_id).capture(
+                    CaptureSource(source_id="document-" + key, content=texts[key], metadata={"document_id": key})
+                )
+            while (await memory.flush()).processed:
+                pass
             page = await memory.list()
             if page.memory_ref is None:
                 raise RuntimeError("The written memory has no head")  # noqa: TRY003
@@ -128,6 +143,8 @@ async def run():  # noqa: C901 - Construct real scopes, measure both budgets, an
                 offset += len(sentence) + 1
             expected = collections.Counter(words(" ".join(corpus[target]["abstract"][i] for i in indices)))
             gold = [{"citation": citation, "content": texts[target][a:b], "start": a, "end": b} for a, b in spans]
+            search = await memory.search(SearchMemoryRequest(query=claim["claim"], mode="fts", limit=16))
+            hits = search.hits
             for budget in (1400, 1800):
                 result = PreparedContextBuilder().build_scopes_result(
                     request=PrepareContextRequest(query=claim["claim"], max_bytes=budget, evidence_selection=True),
@@ -151,6 +168,9 @@ async def run():  # noqa: C901 - Construct real scopes, measure both budgets, an
                     "feasible": len(render(gold).encode()) <= budget,
                     "recall": sum((actual & expected).values()) / sum(expected.values()),
                     "full": all(i in covered for a, b in spans for i in range(a, b)),
+                    "candidate_count": len(hits),
+                    "target_recalled": any(ids_by_entry[h.entry_id] == target for h in hits),
+                    "bytes": result.context.content_bytes,
                 })
             if len(rows) % 80 == 0:
                 print("processed", len(rows), flush=True)
