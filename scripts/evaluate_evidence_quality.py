@@ -52,6 +52,12 @@ parser.add_argument(
     "--data", type=pathlib.Path, required=True, help="Directory containing corpus.jsonl and claims_<split>.jsonl"
 )
 parser.add_argument("--split", choices=("train", "dev"), default="dev")
+parser.add_argument(
+    "--document-format",
+    choices=("abstract", "title-abstract"),
+    default="title-abstract",
+    help="The public runner example captures title plus abstract; also evaluate abstract-only input.",
+)
 parser.add_argument("--output", type=pathlib.Path, required=True)
 args = parser.parse_args()
 
@@ -60,8 +66,13 @@ def words(s):
     return re.findall(r"[a-z]+|\d+", s.lower())
 
 
+def document_text(document):
+    prefix = document["title"] + " " if args.document_format == "title-abstract" else ""
+    return prefix + " ".join(document["abstract"])
+
+
 corpus = {str(d["doc_id"]): d for d in map(json.loads, (args.data / "corpus.jsonl").read_text().splitlines())}
-corpus = {k: d for k, d in corpus.items() if len(" ".join(d["abstract"]).encode()) <= 8192}
+corpus = {k: d for k, d in corpus.items() if len(document_text(d).encode()) <= 8192}
 terms = {k: set(words(d["title"] + " " + " ".join(d["abstract"]))) for k, d in corpus.items()}
 df = collections.Counter(t for ts in terms.values() for t in ts)
 claims = list(map(json.loads, (args.data / ("claims_" + args.split + ".jsonl")).read_text().splitlines()))
@@ -70,7 +81,7 @@ claims = list(map(json.loads, (args.data / ("claims_" + args.split + ".jsonl")).
 def render(gold):
     return (
         TRUST_POLICY
-        + "\nBEGIN_POWERCONTEXT_PREPARED_CONTEXT_V1\n"
+        + "\n\nBEGIN_POWERCONTEXT_PREPARED_CONTEXT_V1\n"
         + json.dumps({"trust": "untrusted_history", "items": gold}, ensure_ascii=False, separators=(",", ":"))
         + "\nEND_POWERCONTEXT_PREPARED_CONTEXT_V1"
     )
@@ -101,7 +112,7 @@ async def run():  # noqa: C901 - Construct real scopes, measure both budgets, an
                 )
             )
             memory = runtime.memory.for_scope(scope.scope_id)
-            texts = {key: " ".join(corpus[key]["abstract"]) for key in ids}
+            texts = {key: document_text(corpus[key]) for key in ids}
             for key in ids:
                 await runtime.sources.for_scope(scope.scope_id).capture(
                     CaptureSource(source_id="document-" + key, content=texts[key], metadata={"document_id": key})
@@ -133,7 +144,7 @@ async def run():  # noqa: C901 - Construct real scopes, measure both budgets, an
             }
             indices = sorted({i for e in claim["evidence"][target] for i in e["sentences"]})
             spans = []
-            offset = 0
+            offset = len(corpus[target]["title"]) + 1 if args.document_format == "title-abstract" else 0
             for i, sentence in enumerate(corpus[target]["abstract"]):
                 if i in indices:
                     if spans and spans[-1][1] + 1 == offset:

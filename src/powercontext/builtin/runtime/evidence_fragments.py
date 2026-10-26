@@ -73,13 +73,19 @@ _STOP = {
 
 
 def _terms(text):
-    terms = re.findall(r"[^\W_]+", text.lower())
-    return [term[:-1] if len(term) > 4 and term.endswith("s") else term for term in terms if term not in _STOP]
+    terms = []
+    for word in re.findall(r"[^\W_]+", text.lower()):
+        for term in re.findall(r"[\u3400-\u9fff]+|[^\u3400-\u9fff]+", word):
+            if "\u3400" <= term[0] <= "\u9fff":
+                terms.extend(term[index : index + 2] for index in range(max(1, len(term) - 1)))
+            elif term not in _STOP:
+                terms.append(term[:-1] if len(term) > 4 and term.endswith("s") else term)
+    return terms
 
 
 def _spans(text):
     start = 0
-    for boundary in re.finditer(r"(?<=[.!?])\s+|\n+", text):
+    for boundary in re.finditer(r"(?<=[.!?])\s+|(?<=[。！？])\s*|\n+", text):  # noqa: RUF001 - CJK punctuation
         end = boundary.start()
         if "\n" not in boundary.group() and re.search(
             r"\b(?:e\.g|i\.e|et al|vs|fig|dr|mr|mrs|prof|approx|ref)\.$", text[:end], re.I
@@ -100,6 +106,54 @@ class EvidenceFragment:
     text: str
 
 
+def _small_spans(text, start, end, limit):
+    """Split an oversized sentence on original word boundaries, then characters."""
+    used, last_space = 0, None
+    for index in range(start, end):
+        char = text[index]
+        cost = len(json.dumps(char, ensure_ascii=False).encode()) - 2
+        if used + cost > limit and index > start:
+            split = last_space if last_space is not None and last_space > start else index
+            yield start, split
+            start = split
+            used = len(json.dumps(text[start:index], ensure_ascii=False).encode()) - 2
+            last_space = None
+        used += cost
+        if char.isspace():
+            last_space = index + 1
+    if start < end:
+        yield start, end
+
+
+def _bounded_spans(text, address, max_bytes):
+    if max_bytes is None:
+        yield from _spans(text)
+        return
+    # Use the longest offsets for a conservative citation/envelope allowance.
+    overhead = len(_render_fragments([EvidenceFragment(address, len(text), len(text), "")]).encode())
+    available = max_bytes - overhead
+    if available <= 0:
+        return
+    for start, end in _spans(text):
+        size = len(json.dumps(text[start:end], ensure_ascii=False).encode()) - 2
+        if size <= available:
+            yield start, end
+        else:
+            yield from _small_spans(text, start, end, min(240, available))
+
+
+def _rationale_weight(start, end, sentence_count, headings):
+    if sentence_count < 4:
+        return 1.0
+    # Long abstracts commonly open with a title or background statement. Result
+    # sections carry observations across sentences, not just in the heading itself.
+    weight = 0.35 if start == 0 else 1.0
+    labels = [heading.group() for heading in headings if heading.end() <= end]
+    if labels:
+        weight *= 1.6 if labels[-1] in {"RESULTS", "FINDINGS", "CONCLUSION", "CONCLUSIONS", "INTERPRETATION"} else 0.6
+    return weight
+
+
 def _key(address):
     ref = address.memory.artifact
     return (
@@ -112,7 +166,7 @@ def _key(address):
     )
 
 
-def _rank_sentences(query_text, groups):
+def _rank_sentences(query_text, groups, max_bytes=None):
     from powercontext.builtin.runtime.prepared_context import MemoryEntryAddress
 
     candidates = []
@@ -129,12 +183,26 @@ def _rank_sentences(query_text, groups):
             )
             terms = Counter(_terms(hit.text))
             document_terms.append(set(terms))
-            for start, end in _spans(hit.text):
-                candidates.append((address, hit.text, start, end, Counter(_terms(hit.text[start:end]))))
+            sentence_count = sum(1 for _ in _spans(hit.text))
+            headings = list(
+                re.finditer(
+                    r"\b(?:BACKGROUND|OBJECTIVES?|METHODS|DESIGN|RESULTS|FINDINGS|CONCLUSIONS?|INTERPRETATION)\b",
+                    hit.text,
+                )
+            )
+            for start, end in _bounded_spans(hit.text, address, max_bytes):
+                candidates.append((
+                    address,
+                    hit.text,
+                    start,
+                    end,
+                    Counter(_terms(hit.text[start:end])),
+                    _rationale_weight(start, end, sentence_count, headings),
+                ))
     df = Counter(term for terms in document_terms for term in terms)
     weights = {term: math.log(1 + (len(document_terms) - df[term] + 0.5) / (df[term] + 0.5)) for term in query}
     ranked = []
-    for index, (address, text, start, end, terms) in enumerate(candidates):
+    for index, (address, text, start, end, terms, rationale_weight) in enumerate(candidates):
         overlap = query & terms.keys()
         # Scientific prose often alternates derived forms (activate/activation).
         # Prefix matches are weaker than complete words and never change the text.
@@ -152,6 +220,7 @@ def _rank_sentences(query_text, groups):
         if re.search(r"\b(?:results?|conclusions?|findings|found|showed|demonstrated|revealed)\b", sentence):
             score *= 1.25
         score *= 1 + 0.25 * start / max(1, len(text))
+        score *= rationale_weight
         ranked.append((-score, index, address, text, start, end))
 
     return ranked
@@ -173,7 +242,7 @@ def _render_fragments(fragments):
         for fragment in fragments
     ]
     payload = json.dumps({"trust": "untrusted_history", "items": items}, ensure_ascii=False, separators=(",", ":"))
-    return f"{TRUST_POLICY}\nBEGIN_POWERCONTEXT_PREPARED_CONTEXT_V1\n{payload}\nEND_POWERCONTEXT_PREPARED_CONTEXT_V1"
+    return f"{TRUST_POLICY}\n\nBEGIN_POWERCONTEXT_PREPARED_CONTEXT_V1\n{payload}\nEND_POWERCONTEXT_PREPARED_CONTEXT_V1"
 
 
 def _merge_fragments(ordered, indices):
@@ -214,7 +283,7 @@ def _prune_states(states):
     return result
 
 
-def _choose_fragments(groups, ranked, max_bytes):
+def _choose_fragments(groups, ranked, max_bytes, *, split_long=False):
     """Exact byte-budget packing, including the cost saved by adjacent intervals."""
     from powercontext.builtin.runtime.prepared_context import MemoryEntryAddress
 
@@ -242,7 +311,7 @@ def _choose_fragments(groups, ranked, max_bytes):
                 _put_state(closed, (cost, False), value)
             states = _prune_states(closed)
             previous_end = 0
-            for start, end in _spans(hit.text):
+            for start, end in _bounded_spans(hit.text, address, max_bytes if split_long else None):
                 index = len(items)
                 value = scores.get((_key(address), start, end), 0.0)
                 items.append((-value, index, address, hit.text, start, end))
@@ -310,6 +379,11 @@ def build_evidence_context(request, groups):
 
     ranked = _rank_sentences(request.query, groups)
     selected = _choose_fragments(groups, ranked, request.max_bytes)
+    if not selected:
+        # Prefer intact evidence statements. If none fits, a long unpunctuated
+        # paragraph can still supply an exact, useful window around query terms.
+        ranked = _rank_sentences(request.query, groups, request.max_bytes)
+        selected = _choose_fragments(groups, ranked, request.max_bytes, split_long=True)
     if not selected:
         return PreparedContextBuild(context=PreparedContext(status="empty", content=None, content_bytes=0), origins=())
     selected = _expand_fragments(selected, ranked, request.max_bytes)

@@ -28,6 +28,7 @@ from powercontext.builtin.runtime import (
     open_builtin_runtime,
 )
 from powercontext.builtin.runtime.prepared_context import PreparedContextBuilder, PreparedMemoryCandidates
+from powercontext.builtin.runtime.prepared_text import TRUST_POLICY
 from powercontext.builtin.scope import ScopeDraft
 from powercontext.sources import SourceDefinitionRegistry, manifest_for_definition, project_source_for_transport
 from powercontext.sources.pdf_pages import PDF_PAGE_SOURCE_DEFINITION, PDFPageInput, search_pdf_pages
@@ -129,10 +130,44 @@ def test_evidence_budget_counts_unicode_quotes_and_preserves_artifact_identity()
             memory_candidates=tuple(groups),
         )
         assert result.context.content_bytes == len((result.context.content or "").encode()) <= budget
+        if result.context.content:
+            assert result.context.content.startswith(TRUST_POLICY + "\n\nBEGIN_POWERCONTEXT_PREPARED_CONTEXT_V1\n")
         assert result.origins == tuple(fragment.address for fragment in result.fragments)
         for fragment in result.fragments:
             source = texts[fragment.address.memory.artifact.artifact_id]
             assert fragment.text == source[fragment.start : fragment.end]
+
+
+def test_long_unpunctuated_history_still_returns_a_late_literal_evidence_window():
+    evidence = "cobalt calibration was 37 degrees"
+    text = "general administrative notes " * 100 + evidence + " routine appendix" * 100
+    result = _prepare("cobalt calibration", (text,), budget=900)
+    assert any(evidence in fragment.text for fragment in result.fragments)
+    assert result.context.content_bytes == len(result.context.content.encode()) <= 900
+    for fragment in result.fragments:
+        assert fragment.text == text[fragment.start : fragment.end]
+
+
+def test_chinese_query_matches_a_phrase_inside_a_late_sentence():
+    evidence = "海洋传感器校准结果为三十七度。"
+    text = "普通行政记录。" * 100 + evidence + "普通行政记录。" * 100
+    result = _prepare("海洋传感器", (text,), budget=900)
+    assert any(evidence in fragment.text for fragment in result.fragments)
+    assert result.context.content_bytes == len(result.context.content.encode()) <= 900
+    for fragment in result.fragments:
+        assert fragment.text == text[fragment.start : fragment.end]
+
+
+def test_result_statement_is_not_crowded_out_by_title_and_method_keywords():
+    text = (
+        "Calibration of cobalt sensors. BACKGROUND Cobalt sensor calibration is important. "
+        "METHODS Cobalt sensor calibration followed standard calibration procedures. "
+        "RESULTS The cobalt sensor was stable at 37 degrees. Its observed drift was zero. "
+        "CONCLUSION Cobalt sensors remained stable."
+    )
+    result = _prepare("cobalt sensor calibration", (text,), budget=750)
+    assert any("The cobalt sensor was stable at 37 degrees." in fragment.text for fragment in result.fragments)
+    assert result.context.content_bytes == len(result.context.content.encode()) <= 750
 
 
 class _PagePipeline:
