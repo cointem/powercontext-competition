@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+data/
+.env
+qoder/deploy/powercontext.env
+# 演示脚本生成的一次性 Server 配置（含临时 token）
+qoder/deploy/demo.powercontext.env
+# Qoder Sites 本地绑定文件（含站点 ID，属于本机而非交付内容）
+qoder/.*.qoder.site

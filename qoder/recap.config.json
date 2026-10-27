@@ -1,0 +1,17 @@
+{
+  "powercontext_env": "deploy/powercontext.env",
+  "data_dir": "data",
+  "seekdb_path": "data/seekdb-recap",
+  "state_path": "data/state.json",
+  "scope": {
+    "title": "2026 竞赛交付 · Qoder 赛道",
+    "summary": "Recap 的试点 Scope：保存竞赛赛道交付过程中的决定、约束与任务进展，用于自动重组周报。"
+  },
+  "repos": [
+    { "path": "/Users/jsyin/project/powercontext", "author": "cointem", "name": "powercontext-competition" },
+    { "path": "/Users/jsyin/project/oceanbase/seekdb", "author": "cointem", "name": "seekdb" },
+    { "path": "/Users/jsyin/project/competition-qoder", "author": "cointem", "name": "recap" }
+  ],
+  "notes_dirs": ["notes"],
+  "embedding_provider": "pyseekdb-default"
+}

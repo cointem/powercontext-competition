@@ -1,0 +1,14 @@
+- atomic-memory/art_0d01d1ead1274a06a8eaf126aee38153@1 [atomic-memory·2026-10-26] 报告合成用确定性组装，不调用生成模型；seekdb 负责时间窗与混合检索，PowerContext 负责"当前仍然成立"的状态。
+- atomic-memory/art_0272d8cebaac4f4d916fe0be0ce7e840@1 [atomic-memory·2026-10-26] PowerContext 的存储后端直接选嵌入式 seekdb，让同一内核既做记忆引擎的持久化又做检索层，这样"技术分工"不需要口头解释。
+- source/src-0b290d9a6e8d8c4582e0 [source·2026-10-20] # Recap 开发记录 · 2026-W44
+
+这一周从读题到把 Recap 跑通。下面的记录不是给周报"编内容"用的，它是 Recap
+真实的输入：PowerContext 的 Memory 与 Source 应当能原样召回这些行。
+
+
+- atomic-memory/art_0e004dc61b884f44af5937f6837281a8@1 [atomic-memory·2026-10-26] 找 3-5 位同学真实用两个周期，记录写周报前后耗时对比。
+- atomic-memory/art_3b454fe0cf7b4ddc996e4b2de032c5a0@1 [atomic-memory·2026-10-26] 把网站的可交互 demo 从真实运行结果导出，不接受手工编造的样例数据。
+
+-- one statement, three predicates --
+SELECT _id, JSON_VALUE(metadata, '$.ref') AS ref, MATCH(document) AGAINST('混合检索 时间窗') AS ft_hit, L2_DISTANCE(embedding, '[0.0711214542388916,0.3626209795475006,0.15203599631786346,0.18453474342823029,-0.00536430394276976 …
+rows=1

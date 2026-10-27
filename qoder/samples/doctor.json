@@ -1,0 +1,7 @@
+{
+  "powercontext": "http://127.0.0.1:8100",
+  "scope_id": "scp_46d9ve5qr8y5t29g2b4sdtk7hf",
+  "memories": 7,
+  "sources": 97,
+  "seekdb": "/Users/jsyin/project/competition-qoder/qoder/data/seekdb-recap docs=54 table=c$v2$1f1390c0d13a11f19c1ccaaafa3a2043 columns=['_id', 'document', 'embedding', 'metadata']"
+}

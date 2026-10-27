@@ -1,0 +1,203 @@
+{
+  "items": [
+    {
+      "author": "cointem",
+      "body": "不能往本机 12883 端口的 seekdb 实例写数据，那是内核赛道的验证实例；Recap 使用独立的嵌入式 seekdb 目录。",
+      "cite": "atomic-memory/art_00e1dbdfe5324b5b9a74a096b69d3ba9@1",
+      "day": "2026-10-27",
+      "kind": "constraint",
+      "repo": "",
+      "title": "不能往本机 12883 端口的 seekdb 实例写数据，那是内核赛道的验证实例；Recap 使用独立的嵌入式 seekdb 目录。",
+      "week": "2026-W44"
+    },
+    {
+      "author": "cointem",
+      "body": "PowerContext 的存储后端直接选嵌入式 seekdb，让同一内核既做记忆引擎的持久化又做检索层，这样\"技术分工\"不需要口头解释。",
+      "cite": "atomic-memory/art_0272d8cebaac4f4d916fe0be0ce7e840@1",
+      "day": "2026-10-27",
+      "kind": "decision",
+      "repo": "",
+      "title": "PowerContext 的存储后端直接选嵌入式 seekdb，让同一内核既做记忆引擎的持久化又做检索层，这样\"技术分工\"不需要口头解释。",
+      "week": "2026-W44"
+    },
+    {
+      "author": "cointem",
+      "body": "交付物必须落在比赛仓库的 `qoder/` 目录，且分支基于 `2026-competition-ecosystem`。",
+      "cite": "atomic-memory/art_07639b02cefb4dd0a079805c789cd489@1",
+      "day": "2026-10-27",
+      "kind": "constraint",
+      "repo": "",
+      "title": "交付物必须落在比赛仓库的 `qoder/` 目录，且分支基于 `2026-competition-ecosystem`。",
+      "week": "2026-W44"
+    },
+    {
+      "author": "cointem",
+      "body": "周报的每一条结论都必须挂一个可回溯引用（`atomic-memory/…@rev` 或 `source/…`），没有出处的句子直接判定为 bug。",
+      "cite": "atomic-memory/art_0b1d85551f274d46a346df63df2a49ef@1",
+      "day": "2026-10-27",
+      "kind": "decision",
+      "repo": "",
+      "title": "周报的每一条结论都必须挂一个可回溯引用（`atomic-memory/…@rev` 或 `source/…`），没有出处的句子直接判定为 bug。",
+      "week": "2026-W44"
+    },
+    {
+      "author": "cointem",
+      "body": "报告合成用确定性组装，不调用生成模型；seekdb 负责时间窗与混合检索，PowerContext 负责\"当前仍然成立\"的状态。",
+      "cite": "atomic-memory/art_0d01d1ead1274a06a8eaf126aee38153@1",
+      "day": "2026-10-27",
+      "kind": "decision",
+      "repo": "",
+      "title": "报告合成用确定性组装，不调用生成模型；seekdb 负责时间窗与混合检索，PowerContext 负责\"当前仍然成立\"的状态。",
+      "week": "2026-W44"
+    },
+    {
+      "author": "cointem",
+      "body": "找 3-5 位同学真实用两个周期，记录写周报前后耗时对比。",
+      "cite": "atomic-memory/art_0e004dc61b884f44af5937f6837281a8@1",
+      "day": "2026-10-27",
+      "kind": "next_step",
+      "repo": "",
+      "title": "找 3-5 位同学真实用两个周期，记录写周报前后耗时对比。",
+      "week": "2026-W44"
+    },
+    {
+      "author": "cointem",
+      "body": "把网站的可交互 demo 从真实运行结果导出，不接受手工编造的样例数据。",
+      "cite": "atomic-memory/art_3b454fe0cf7b4ddc996e4b2de032c5a0@1",
+      "day": "2026-10-27",
+      "kind": "next_step",
+      "repo": "",
+      "title": "把网站的可交互 demo 从真实运行结果导出，不接受手工编造的样例数据。",
+      "week": "2026-W44"
+    },
+    {
+      "author": "cointem",
+      "body": "这一周从读题到把 Recap 跑通。下面的记录不是给周报\"编内容\"用的，它是 Recap 真实的输入：PowerContext 的 Memory 与 Source 应当能原样召回这些行。 ## 决定与约束 - [决定] 周报的每一条结论都必须挂一个可回溯引用（`atomic-memory/…@rev` 或 `source/…`），没有出处的句子直接判定为 bug。 - [决定] 报告合成用确定性组装，不调用生成模型；seekdb 负责时间窗与混合检索，PowerContext 负责\"当前仍然成立\"的状态。 - [约束] 不能往本机 12883 端口的 seekdb 实例写数据，那是内核赛道的验证实例；Recap 使用独立的嵌入式 seekdb 目录。 - [约束] 交付物必须落在比赛仓库的 `qoder/` 目录，且分支基于 `2026-competition-ecosystem`。 - [决定] PowerContext 的存储后端直接选嵌入式 seekdb，让同一内核既做记忆引擎的持久化又做检索层，这样\"技术分工\"不需要口头解释。 - [下一步] 把网站的可交互 demo 从真实运行结果导出，不接受手工编造的样例数据。 - [下一步] 找 3-5 位同学真实用两个周期，记录写周报前后耗时对比。 ## 踩到的坑 pyseekdb 的 `hybrid_search` 里对 JSON metadata 做字符串范围比较（`created_at $lt \"2026-10-20\"`）会被 seekdb 拒绝，报 `Invalid argument code=1210`；改成整数日键 `created_key=20261020` 后同一条查询正常。 另外 pylibseekdb 的 cursor 不支持绑定参数，混合检索的裸 SQL 演示只能走白名单转义，注入用例已进测试。",
+      "cite": "source/src-0b290d9a6e8d8c4582e0",
+      "day": "2026-10-20",
+      "kind": "note",
+      "repo": "",
+      "title": "Recap 开发记录 · 2026-W44",
+      "week": "2026-W43"
+    },
+    {
+      "author": "cointem",
+      "body": "commit 43f3b64b61c065c75df1763dd0055757a14036e2 authored 2026-10-26 by cointem 1 files changed",
+      "cite": "source/src-143ba1d6e383f964831c",
+      "day": "2026-10-26",
+      "kind": "commit",
+      "repo": "powercontext-competition",
+      "title": "[powercontext-competition] feat(gaode): add nearby walking recommendation skill",
+      "week": "2026-W44"
+    },
+    {
+      "author": "cointem",
+      "body": "commit 21191c2200c44146d4fe24c9757060652bf9131a authored 2026-10-26 by cointem 15 files changed",
+      "cite": "source/src-509672aa8ef511b9d43d",
+      "day": "2026-10-26",
+      "kind": "commit",
+      "repo": "powercontext-competition",
+      "title": "[powercontext-competition] feat(dify): add persistent time hotel workflow and verified seekdb backend",
+      "week": "2026-W44"
+    },
+    {
+      "author": "cointem",
+      "body": "commit 087b36c00a908a4129258eaf08806b0ceddeda4d authored 2026-10-26 by cointem 21 files changed",
+      "cite": "source/src-692db5fb9b2aa2191b67",
+      "day": "2026-10-26",
+      "kind": "commit",
+      "repo": "powercontext-competition",
+      "title": "[powercontext-competition] feat(stepfun): add browser embeddings and verified seekdb hybrid search",
+      "week": "2026-W44"
+    },
+    {
+      "author": "cointem",
+      "body": "commit 6b9d5e7393ca9b131c5b2cd1c69e6735ad786075 authored 2026-10-26 by cointem 3 files changed",
+      "cite": "source/src-21e667b91a751d1f5895",
+      "day": "2026-10-26",
+      "kind": "commit",
+      "repo": "powercontext-competition",
+      "title": "[powercontext-competition] chore(modelscope): prepare validated skill publication package",
+      "week": "2026-W44"
+    },
+    {
+      "author": "cointem",
+      "body": "commit f25be9c68cd3ceccaa51e2269c56a86937a0ad09 authored 2026-10-26 by cointem 5 files changed",
+      "cite": "source/src-672dbfab15d6414b2616",
+      "day": "2026-10-26",
+      "kind": "commit",
+      "repo": "powercontext-competition",
+      "title": "[powercontext-competition] fix(stepfun): handle default batches for browser imports and queries",
+      "week": "2026-W44"
+    },
+    {
+      "author": "cointem",
+      "body": "commit 7a61429dea046a4014b9cfca6e5f3d4ffed71be5 authored 2026-10-26 by cointem 3 files changed",
+      "cite": "source/src-6a12f2019c3a46a04eb5",
+      "day": "2026-10-26",
+      "kind": "commit",
+      "repo": "powercontext-competition",
+      "title": "[powercontext-competition] docs(modelscope): record published skill and verification",
+      "week": "2026-W44"
+    },
+    {
+      "author": "cointem",
+      "body": "commit 8e078729dfee08ed9a4b87f0151751591d1b9dea authored 2026-10-26 by cointem 1 files changed",
+      "cite": "source/src-7d5a7f06c3dea438db99",
+      "day": "2026-10-26",
+      "kind": "commit",
+      "repo": "powercontext-competition",
+      "title": "[powercontext-competition] fix(gaode): add competition ownership verification line",
+      "week": "2026-W44"
+    },
+    {
+      "author": "cointem",
+      "body": "commit c58e2278a80031a3bd72060b31aac07f2fdc51b7 authored 2026-10-26 by cointem 4 files changed",
+      "cite": "source/src-e025572c21ae8ea64885",
+      "day": "2026-10-26",
+      "kind": "commit",
+      "repo": "powercontext-competition",
+      "title": "[powercontext-competition] docs(modelscope): verify published ownership marker",
+      "week": "2026-W44"
+    },
+    {
+      "author": "cointem",
+      "body": "commit fc8e77599fa3cbc70d375adb7ea79a0111c8253c authored 2026-10-26 by cointem 11 files changed",
+      "cite": "source/src-793819d4b8a907a8676b",
+      "day": "2026-10-26",
+      "kind": "commit",
+      "repo": "seekdb",
+      "title": "[seekdb] feat(sql): enhance AI prompts, batch embeddings and reranking",
+      "week": "2026-W44"
+    },
+    {
+      "author": "cointem",
+      "body": "commit efa4b75764b1787e199356e1e73d9cfff8fa88a0 authored 2026-10-26 by cointem 2 files changed",
+      "cite": "source/src-dfdb45eb5c02ce23c7de",
+      "day": "2026-10-26",
+      "kind": "commit",
+      "repo": "seekdb",
+      "title": "[seekdb] perf(fts): avoid redundant allocation for normalized tokens",
+      "week": "2026-W44"
+    },
+    {
+      "author": "cointem",
+      "body": "commit a5925691a5fce90377538a3d69c57f134d6869c2 authored 2026-10-26 by cointem 39 files changed",
+      "cite": "source/src-37967d60d6e640f97a22",
+      "day": "2026-10-26",
+      "kind": "commit",
+      "repo": "seekdb",
+      "title": "[seekdb] feat(sql): query CSV JSONL and Parquet files and export CSV atomically",
+      "week": "2026-W44"
+    }
+  ],
+  "meta": {
+    "author": "cointem",
+    "collection": "recap_docs",
+    "docs": 19,
+    "generated_at": "2026-10-26T16:29:33+00:00",
+    "scope_id": "scp_46d9ve5qr8y5t29g2b4sdtk7hf",
+    "skipped_process_docs": 35,
+    "table": "c$v2$1f1390c0d13a11f19c1ccaaafa3a2043"
+  }
+}

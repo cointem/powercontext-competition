@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recap · 云端工作区</title>
+<meta name="description" content="Recap：把工作痕迹提交到云端，按周组合成可回溯引用的周报，并对整份归档做时间窗检索。">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%230b1020'/%3E%3Cpath d='M10 21a7 7 0 1 1 11-4' fill='none' stroke='%235eead4' stroke-width='2.6' stroke-linecap='round'/%3E%3Cpath d='M22 11v6h-6' fill='none' stroke='%2393b4ff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+  <aside class="rail">
+    <a class="brand" href="./" aria-label="Recap 云端工作区">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="9" fill="rgba(94,234,212,.08)"/>
+        <path d="M10 21a7 7 0 1 1 11-4" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round"/>
+        <path d="M22 11v6h-6" fill="none" stroke="var(--accent-2)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="brand-text">
+        <b>Recap</b>
+        <small>云端工作区</small>
+      </span>
+    </a>
+
+    <nav class="tabs" role="tablist" aria-label="视图">
+      <button class="tab" role="tab" data-view="report" aria-selected="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
+        <span>周报</span>
+      </button>
+      <button class="tab" role="tab" data-view="search" aria-selected="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+        <span>检索</span>
+      </button>
+      <button class="tab" role="tab" data-view="board" aria-selected="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8.5v7M8.5 12h7"/></svg>
+        <span>痕迹板</span>
+      </button>
+      <button class="tab" role="tab" data-view="about" aria-selected="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2.5"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/></svg>
+        <span>引擎与边界</span>
+      </button>
+    </nav>
+
+    <div class="meta" id="meta"></div>
+  </aside>
+
+  <main class="pane">
+    <header class="pane-head">
+      <p class="eyebrow">2026 OceanBase 生态大赛 <span>·</span> Qoder 赛道</p>
+      <h1>把一周的真实痕迹，<span>重组成一份可回溯的周报</span></h1>
+      <p class="lede">提交工作痕迹，按周组合成周报，按关键词和日期检索。每条结论都能点回原文。</p>
+    </header>
+
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+
+    <section class="view" id="view-report" hidden>
+      <div class="view-head">
+        <h2>周报</h2>
+      </div>
+      <div class="bar">
+        <label class="field week">
+          <span>周</span>
+          <select id="week-picker"></select>
+        </label>
+        <div class="actions">
+          <button id="btn-reload" class="ghost" type="button">重新组合</button>
+          <button id="btn-copy" class="ghost" type="button">复制 Markdown</button>
+          <button id="btn-download" class="ghost" type="button">下载 .md</button>
+          <button id="btn-snapshot" class="primary" type="button">保存本周快照</button>
+        </div>
+      </div>
+      <div id="report" class="report"></div>
+      <p class="sub foot" id="report-foot"></p>
+    </section>
+
+    <section class="view" id="view-search" hidden>
+      <div class="view-head">
+        <h2>检索</h2>
+      </div>
+      <form class="bar search" id="search-form">
+        <label class="field grow">
+          <span>关键词</span>
+          <input id="q" type="search" placeholder="空格分隔多个关键词" autocomplete="off">
+        </label>
+        <label class="field"><span>起</span><input id="from" type="date"></label>
+        <label class="field"><span>止</span><input id="to" type="date"></label>
+        <label class="field"><span>类型</span><select id="kind-filter"></select></label>
+        <label class="field narrow"><span>条数</span><input id="limit" type="number" min="1" max="100" value="20"></label>
+        <div class="actions">
+          <button class="primary" type="submit">检索</button>
+          <button class="ghost" type="button" id="btn-clear">清空</button>
+        </div>
+      </form>
+      <div id="results"></div>
+    </section>
+
+    <section class="view" id="view-board" hidden>
+      <div class="view-head">
+        <h2>痕迹板</h2>
+      </div>
+      <div class="split">
+        <div class="card">
+          <div class="card-head">
+            <h3>提交一条工作痕迹</h3>
+            <p id="board-hint">登录后才能提交。</p>
+          </div>
+          <form id="entry-form" class="stack">
+            <div class="row">
+              <label class="field">类型
+                <select id="entry-kind"></select>
+              </label>
+              <label class="field">日期 <input id="entry-day" type="date"></label>
+            </div>
+            <label class="field">标题 <input id="entry-title" maxlength="200" placeholder="一句话说清做了什么"></label>
+            <label class="field">正文 <textarea id="entry-body" rows="4" maxlength="2000" placeholder="细节、原因、影响；周报里点引用可以看全文"></textarea></label>
+            <div class="row">
+              <label class="field">仓库 <input id="entry-repo" maxlength="40" placeholder="可留空"></label>
+              <label class="field">署名 <input id="entry-author" maxlength="40"></label>
+            </div>
+            <button class="primary wide" type="submit" id="btn-submit">提交</button>
+          </form>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h3>最近入库</h3>
+          </div>
+          <div id="recent" class="feed"></div>
+          <div class="card-sep"></div>
+          <div class="card-head">
+            <h3>批量导入</h3>
+            <p>把本机导出的痕迹按引用去重入库，可重复导入。</p>
+          </div>
+          <button class="ghost wide" id="btn-import" type="button">导入本机痕迹</button>
+          <p class="mono small" id="import-result"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-about" hidden>
+      <div class="view-head">
+        <h2>引擎与边界</h2>
+      </div>
+      <div class="flow">
+        <div class="step"><b>本机采集</b><code>recap collect</code><p>读 git 与 notes，写入 PowerContext。</p></div>
+        <div class="step"><b>本机镜像</b><code>recap index</code><p>把 artifact 复制进嵌入式 seekdb。</p></div>
+        <div class="step"><b>导出</b><code>recap seed</code><p>生成 <code>web/seed.json</code>，带原始引用。</p></div>
+        <div class="step"><b>云端入库</b><code>POST /api/import</code><p>校验后写入 <code>entries</code>，按 <code>cite</code> 幂等。</p></div>
+        <div class="step"><b>组合与检索</b><code>GET /api/report</code><p>从库里组合周报、执行检索。</p></div>
+      </div>
+      <div class="split">
+        <div class="card">
+          <div class="card-head"><h3>这里真实承重的部分</h3></div>
+          <ul class="points">
+            <li><b>写入</b>表单提交经服务端校验后落库，重放同一个幂等键不会多出第二条。</li>
+            <li><b>组合</b>周报按类型分桶、逐条挂引用，没有出处的句子不会出现在报告里。</li>
+            <li><b>检索</b>关键词、日期窗、类型过滤在库内数据上执行，返回命中数与扫描数。</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>它不是什么</h3></div>
+          <ul class="points">
+            <li><b>不调用大模型</b>组合是规则装配，和 CLI 一样可复现。</li>
+            <li><b>不做向量检索</b>混合检索与裸 SQL 演示在本机的 seekdb 里跑（<code>recap search --raw-sql</code>）；云端没有 embedding 与全文索引，检索是库内扫描，上限最近 1000 条。</li>
+            <li><b>不是多租户</b>写入需要 Qoder 登录，但痕迹板对同站所有登录者可见；私有内容请留在本机。</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card mt">
+        <div class="card-head"><h3>数据与服务</h3></div>
+        <div id="service"></div>
+      </div>
+    </section>
+
+    <div class="drawer" id="drawer" hidden></div>
+
+    <footer>
+      <p>数据来自站点数据库；源码与运行说明见交付仓库的 <code>qoder/</code> 目录。</p>
+    </footer>
+  </main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
