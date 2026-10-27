@@ -1,0 +1,156 @@
+{
+  "timestamp": "2026-10-26T17:33:27.806414+00:00",
+  "status": "passed",
+  "runs": [
+    {
+      "action": "进店看看",
+      "run_id": "9911b647-36b9-463e-ba1d-6aacb7a91982",
+      "state": {
+        "round": 0,
+        "coins": 10,
+        "debt": 0,
+        "reputation": 0,
+        "relationships": {
+          "掌柜": 0,
+          "跑堂": 0,
+          "神秘客": 0
+        },
+        "flags": [],
+        "ending": ""
+      },
+      "replayed": false
+    },
+    {
+      "action": "借二十文",
+      "run_id": "1156315a-595f-4506-9532-a3f04c156a47",
+      "state": {
+        "round": 1,
+        "coins": 30,
+        "debt": 20,
+        "reputation": 0,
+        "relationships": {
+          "掌柜": 0,
+          "跑堂": 0,
+          "神秘客": 0
+        },
+        "flags": [
+          "borrowed"
+        ],
+        "ending": ""
+      },
+      "replayed": false
+    },
+    {
+      "action": "借二十文",
+      "run_id": "0a6132ff-dc79-491b-bec1-7b5aa660919c",
+      "state": {
+        "round": 1,
+        "coins": 30,
+        "debt": 20,
+        "reputation": 0,
+        "relationships": {
+          "掌柜": 0,
+          "跑堂": 0,
+          "神秘客": 0
+        },
+        "flags": [
+          "borrowed"
+        ],
+        "ending": ""
+      },
+      "replayed": true
+    },
+    {
+      "action": "进店看看",
+      "run_id": "40a417f7-b17e-402a-9f9e-d384d00ffebc",
+      "state": {
+        "round": 1,
+        "coins": 30,
+        "debt": 20,
+        "reputation": 0,
+        "relationships": {
+          "掌柜": 0,
+          "跑堂": 0,
+          "神秘客": 0
+        },
+        "flags": [
+          "borrowed"
+        ],
+        "ending": ""
+      },
+      "replayed": false
+    },
+    {
+      "action": "帮跑堂",
+      "run_id": "57c21c48-7128-4d88-9399-79c8f630738f",
+      "state": {
+        "round": 2,
+        "coins": 40,
+        "debt": 20,
+        "reputation": 2,
+        "relationships": {
+          "掌柜": 0,
+          "跑堂": 2,
+          "神秘客": 0
+        },
+        "flags": [
+          "borrowed",
+          "help_clerk"
+        ],
+        "ending": ""
+      },
+      "replayed": false
+    },
+    {
+      "action": "回忆旧账",
+      "run_id": "f5646569-7e88-453a-a214-be17ebe8c3ab",
+      "state": {
+        "round": 2,
+        "coins": 40,
+        "debt": 20,
+        "reputation": 2,
+        "relationships": {
+          "掌柜": 0,
+          "跑堂": 2,
+          "神秘客": 0
+        },
+        "flags": [
+          "borrowed",
+          "help_clerk"
+        ],
+        "ending": ""
+      },
+      "replayed": false
+    },
+    {
+      "action": "进店看看",
+      "run_id": "52fa7720-d496-45b2-915a-3b5cabcb56dd",
+      "state": {
+        "round": 0,
+        "coins": 10,
+        "debt": 0,
+        "reputation": 0,
+        "relationships": {
+          "掌柜": 0,
+          "跑堂": 0,
+          "神秘客": 0
+        },
+        "flags": [],
+        "ending": ""
+      },
+      "replayed": false
+    }
+  ],
+  "checks": [
+    "static page",
+    "key not exposed",
+    "path traversal blocked",
+    "invalid input blocked",
+    "cross-origin blocked",
+    "published Dify API",
+    "idempotent retry",
+    "durable resume",
+    "actual memory recall",
+    "save isolation"
+  ]
+}

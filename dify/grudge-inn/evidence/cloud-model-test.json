@@ -1,0 +1,13 @@
+{
+  "observed_date": "2026-10-27",
+  "source": "Dify Cloud UI, native LLM node LAST RUN panel",
+  "app_url": "https://cloud.dify.ai/app/c0a686d0-9d85-4510-a6b8-8745e47c04db/workflow",
+  "node_id": "npc",
+  "provider": "langgenius/openai/openai",
+  "model": "gpt-4o-mini",
+  "status": "SUCCESS",
+  "elapsed_seconds": 2.554,
+  "total_tokens": 323,
+  "input_scenario": "玩家还清二十文借款；提供借款历史与要带糖葫芦的台词。",
+  "scope": "Single native LLM node test only. Cloud end-to-end workflow has not been run because local PowerContext is not exposed publicly. The generated text was not extracted."
+}

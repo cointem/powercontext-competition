@@ -1,3 +1,17 @@
+# Dify 本次提测入口
+
+当前参赛作品：**这家客栈会记仇**，材料位于 [`grudge-inn/`](grudge-inn/)。
+
+- 首先阅读：[提测与复现说明](grudge-inn/SUBMISSION.md)。
+- 已实测工作流：[grudge-inn-rules.yml](grudge-inn/grudge-inn-rules.yml)，Dify 1.18.0 + PowerContext 1.4.0，无模型依赖。
+- 可选 AI 演出工作流：[grudge-inn.yml](grudge-inn/grudge-inn.yml)，模型节点单独实测，完整 AI 路径验证边界见说明。
+- 一屏网页源码、配置示例、启动方式、完整样例和运行证据均在同目录。
+- 验收主作品无需使用本机 localhost 或作者的 Cloud Studio 账号。
+
+以下保留此前的“时空旅馆”示例说明；与本次客栈作品是两个独立应用，请按上述入口验收本次提交。
+
+---
+
 # 时空旅馆：阿零记得你
 
 一款通过 Dify 运行的选择式互动剧情。NPC 会记住玩家的捣乱、道歉和帮助；选择改变信任值、道具、场景以及最终结局。使用相同旅客代号即可在新一次工作流运行中继续剧情。

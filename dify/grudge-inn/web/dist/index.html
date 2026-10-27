@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#263d35">
+  <meta name="description" content="六次行动，一场雨夜。你留下的每件小事，这家客栈都会记得。">
+  <title>这家客栈会记仇 · 雨夜借宿</title>
+  <link rel="icon" href="/assets/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script>
+</head>
+<body>
+<header class="header">
+  <a class="brand" href="/" aria-label="客栈首页"><span class="brand-seal">宿</span><span>这家客栈会记仇<small>一场关于人情与旧账的雨夜</small></span></a>
+  <nav aria-label="页面导航"><a class="active" href="#game">客栈大堂</a><button id="ledger-button" class="plain" aria-expanded="false" aria-controls="ledger">旧账簿 <span id="memory-count">0</span></button><button id="help-button" class="plain">玩法说明 <span aria-hidden="true">↗</span></button></nav>
+</header>
+<main id="game" class="shell">
+  <section class="welcome"><div class="welcome-copy"><span class="eyebrow">一间客栈 · 三位故人 · 六次选择</span><h1>江湖不远，人情有账。</h1><p>雨还没停。打烊之前，想办法留下过夜。</p></div><div class="visit-controls"><span class="saved" id="save-status" role="status">正在翻开账簿</span><button class="quiet-button" id="saves-button">我的旅程 <span aria-hidden="true">⌄</span></button></div></section>
+  <section class="stats" aria-label="当前账本"><div><span class="stat-icon">◈</span><div><span class="stat-label">盘缠</span><strong id="coins">—</strong><small>文</small></div></div><div><span class="stat-icon">▤</span><div><span class="stat-label">未还的债</span><strong id="debt">—</strong><small>文</small></div></div><div><span class="stat-icon">✧</span><div><span class="stat-label">江湖信誉</span><strong id="reputation">—</strong><small id="reputation-label">尚无往来</small></div></div><div class="turn-stat"><div><span class="stat-label">距离打烊</span><strong id="turns">—</strong><small>次行动</small></div><div id="turn-dots" class="turn-dots" aria-hidden="true"></div></div></section>
+  <div class="game-layout">
+    <div class="main-column">
+      <section class="scene" aria-label="夜雨中的客栈大堂"><img class="scene-art" src="/assets/inn-scene.png" alt="暖灯下的古风客栈，掌柜在柜台记账，跑堂端着碗，神秘客坐在窗边"><div class="scene-shade"></div><div class="scene-top"><span><span class="weather-dot"></span> 戌时 · 夜雨未歇</span><span class="scene-label" id="scene-chapter">第一夜 / 入店</span></div><div class="scene-copy"><span class="vertical-note" aria-hidden="true">有些事，<br>他们不会忘。</span><div><p>雨夜借宿</p><h2>今夜，留得下吗？</h2><span>一念之间，欠下人情；一言一行，皆有回响。</span></div></div></section>
+      <section class="people" aria-label="客栈里的人"><button class="person selected" data-person="all" aria-pressed="true"><span class="portrait owner">掌</span><span><b>掌柜</b><small>精明，也认实在人</small></span><span class="relationship" id="rel-owner">初见</span></button><button class="person" data-person="跑堂" aria-pressed="false"><span class="portrait clerk">堂</span><span><b>跑堂</b><small>你的人情，他记得</small></span><span class="relationship" id="rel-clerk">初见</span></button><button class="person" data-person="神秘客" aria-pressed="false"><span class="portrait guest">客</span><span><b>神秘客</b><small>来路不明，惜字如金</small></span><span class="relationship" id="rel-guest">初见</span></button></section>
+      <section class="dialogue" aria-labelledby="speaker"><div class="dialogue-top"><div><span class="tiny-seal" aria-hidden="true">言</span><strong id="speaker">客栈见闻</strong><span id="speaker-note">门外风雨，门内人情</span></div><span id="round-label">序 · 推门入店</span></div><div id="story" class="story" aria-live="polite">灯笼还亮着。正在打开你的旅程……</div><p id="narration" class="narration" hidden></p><div id="ending" class="ending" hidden><span>今夜的归处</span><h3 id="ending-title"></h3><p id="ending-detail"></p><button id="ending-new" class="primary-button">再赴一场雨夜 <span aria-hidden="true">↗</span></button></div><div class="dialogue-footer"><span id="story-status">每一次选择，都会留下痕迹</span><button id="observe" class="text-button">环顾客栈 <span aria-hidden="true">↻</span></button></div></section>
+      <section class="choices" aria-labelledby="choices-title"><div class="section-heading"><div><span class="eyebrow">下一步，由你决定</span><h2 id="choices-title">你打算怎么做？</h2></div><span class="cost-note">普通行动消耗 1 次机会</span></div><div class="filters" role="group" aria-label="按人物查看行动"><button class="selected" data-filter="all" aria-pressed="true">全部行动</button><button data-filter="掌柜" aria-pressed="false">找掌柜</button><button data-filter="跑堂" aria-pressed="false">找跑堂</button><button data-filter="神秘客" aria-pressed="false">找神秘客</button></div><div id="actions" class="action-grid"></div><p id="empty-actions" class="empty-actions" hidden>此刻没有可做的事。先与其他人打个交道吧。</p><div id="line-wrap" class="line-wrap" hidden><label for="player-line">顺便说一句 <span>可选，不影响规则裁定</span></label><textarea id="player-line" maxlength="300" rows="2" placeholder="有些话，想亲口对他说……"></textarea></div></section>
+    </div>
+    <aside id="ledger" class="ledger-column"><button id="close-ledger" class="close-ledger" aria-label="收起旧账簿">×</button><section class="ledger"><div class="ledger-binding" aria-hidden="true"></div><div class="ledger-heading"><span class="eyebrow">有借有还 · 有情有义</span><h2>旧账簿 <span class="ledger-seal">记</span></h2><p>人会忘，账不会。</p></div><div class="ledger-tabs"><span>他们记住的事</span><span id="ledger-total">零笔</span></div><div id="memories" class="memories" tabindex="0" aria-label="已召回的往事"><div class="memory-empty"><span aria-hidden="true">〰</span><p>纸上还是空白。</p><small>借一笔钱，帮一个忙。<br>你的故事，就从这里落笔。</small></div></div><button id="recall" class="ledger-refresh">翻一翻旧账 <span aria-hidden="true">↗</span></button><p class="ledger-footnote">翻账与观察不消耗行动机会</p></section><section class="night-note"><span class="note-star" aria-hidden="true">✳</span><h3>客栈里的规矩</h3><p>银两不一定能买来好感。<br>他们记得你说过什么，<br>更记得你做过什么。</p><div class="note-divider"></div><span>六次选择，三种归处。</span></section></aside>
+  </div>
+  <footer><span>灯还亮着，故事还没结束。</span><span id="mode-label">Dify 工作流 × PowerContext 记忆</span></footer>
+</main>
+<button id="ledger-backdrop" class="ledger-backdrop" aria-label="收起旧账簿" hidden></button>
+<div id="error-banner" class="error-banner" role="alert" hidden><div><strong>这页账，还没核对好</strong><p id="error-text"></p></div><button id="retry" class="primary-button">重试本轮</button></div>
+<dialog id="help-dialog"><button class="close-dialog" aria-label="关闭">×</button><span class="eyebrow">在打烊之前，留下一点好印象</span><h2>这家客栈怎么玩？</h2><p>你带着十文钱推门而入，有六次行动机会。与掌柜、跑堂和神秘客打交道，让他们愿意留你过夜。</p><ol><li><b>选择一件事。</b>借钱、帮忙、道歉，或试试冒充食评家。普通行动消耗一次机会，观察和翻账免费。</li><li><b>记住你的承诺。</b>借款会留下欠条，帮助会留下人情。刷新页面，人物仍记得你。</li><li><b>找到今夜的归处。</b>六次行动后自动结算，也可以提前申请入住。可能贵宾入住、打工抵债，或被赶出门。</li></ol><p class="dialog-note">进度保存在记忆服务中，浏览器保留续玩凭据。请使用同一浏览器；清除网站数据会丢失续玩入口。当前为本地规则试玩，固定剧情由 Dify 裁定，未启用 AI 即兴对白。</p><button class="primary-button close-dialog">回到客栈</button></dialog>
+<dialog id="saves-dialog"><button class="close-dialog" aria-label="关闭">×</button><span class="eyebrow">一场雨夜，一本旧账</span><h2>我的旅程</h2><p>换一局试试不同选择，旧故事会为你留着。</p><div id="save-list" class="save-list"></div><button id="new-game" class="primary-button">开启新的雨夜 <span aria-hidden="true">＋</span></button></dialog>
+</body>
+</html>
