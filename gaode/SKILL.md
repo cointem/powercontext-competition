@@ -7,6 +7,21 @@ description: 使用高德 MCP，根据城市、起点和用户需求推荐附近
 
 使用已配置的高德 MCP，完成周边地点推荐。各地点都是从同一起点出发的独立备选。
 
+## 高德 MCP 工具
+
+使用评测环境已经配置的高德地图 MCP Server。官方 npm 包为 `@amap/amap-maps-mcp-server`，协议中的服务标识为 `mcp-server/amap-maps`；客户端配置中的服务别名由运行环境决定。
+
+从当前可用工具中按功能和输入参数识别下列高德工具，调用环境暴露的完整工具名。若工具名带服务命名空间前缀，使用该完整名称；下表给出官方工具的原始名称。
+
+| 能力 | 原始工具名 | 参数 |
+| --- | --- | --- |
+| 周边地点搜索 | `maps_around_search` | `location`（经度,纬度）、`keywords`、`radius`（米数字符串） |
+| POI 详情 | `maps_search_detail` | `id`（搜索返回的 POI ID） |
+| 步行路线 | `maps_direction_walking` | `origin`、`destination`（均为经度,纬度） |
+| 城市关键词搜索 | `maps_text_search` | `keywords`、`city` |
+
+工具参数按其实际输入 schema 组成 JSON 对象，例如周边搜索使用 `{"location":"120.164052,30.254642","keywords":"咖啡馆","radius":"2000"}`，详情查询使用 `{"id":"搜索结果中的真实 POI ID"}`。示例起点仅说明格式，执行时使用用户输入的起点。返回为 MCP `content` 文本块时，解析其中的 JSON，再读取 POI 或路线数据。
+
 ## 1. 理解需求
 
 提取城市、起点坐标、地点类型、步行时间上限、推荐数量和排序偏好，同时保留用户的排除条件。起点坐标使用“经度,纬度”。推荐数量默认 3 个，用户要求更少时按其要求。
