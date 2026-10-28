@@ -87,6 +87,7 @@ app.post('/api/evidence', async (req, res) => {
   await writeFile(`evidence/runtime/${filename}`, JSON.stringify(req.body, null, 2));
   res.json({ file: `evidence/runtime/${filename}` });
 });
+app.use('/models', express.static('public/models', { maxAge: '1h' }));
 app.use(express.static('dist'));
 app.use((error, _req, res, _next) => { console.error(error.message); res.status(error.status || 500).json({ error: error.message }); });
 app.listen(Number(process.env.PORT || 15174), '127.0.0.1', () => console.log('API http://127.0.0.1:' + (process.env.PORT || 15174)));

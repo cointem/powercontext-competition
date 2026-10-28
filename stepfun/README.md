@@ -4,17 +4,15 @@
 
 ## 运行
 
-需要 Node.js 22+、Python 3、curl、Docker Compose。实测 Node.js 24.20.0、macOS 26.5.1、Apple M1 Pro、Chromium 155。使用近期 Chrome / Edge 打开。
+需要 Node.js 22+、Docker Compose。实测 Node.js 24.20.0、macOS 26.5.1、Apple M1 Pro、Chromium 155。使用近期 Chrome / Edge 打开。
 
 ```sh
 docker compose up -d --wait
 npm ci --ignore-scripts
-npm run models
-npm run build
 npm start
 ```
 
-打开 **http://127.0.0.1:15174/**。Compose 在 12882 端口启动独立 seekdb 1.4.0，数据保存在命名卷中。首次下载约 159 MB 的三个公开模型权重及分词文件；模型文件不提交到 Git。后续启动无需重新下载。服务器只负责静态文件和数据库操作，未注册任何服务端 embedding function。
+打开 **http://127.0.0.1:15174/**。Compose 在 12882 端口启动独立 seekdb 1.4.0，数据保存在命名卷中。`npm start` 会先检查并补齐缺失的模型文件（约 159 MB 的三个公开模型权重及分词文件，固定 revision 下载并逐个校验 SHA-256，不提交到 Git），再构建前端并启动服务器；模型齐备时直接启动。后续启动无需重新下载。服务器只负责静态文件、模型分发和数据库操作，未注册任何服务端 embedding function。
 
 已有 seekdb 时可以跳过 Compose，通过 `SEEKDB_HOST`、`SEEKDB_PORT`、`SEEKDB_USER`、`SEEKDB_PASSWORD`、`SEEKDB_DATABASE` 配置。默认数据库为 `stepfun_browser_kb`，自动创建。HTTP 端口可用 `PORT` 指定。开发方式为两个终端分别运行 `npm run server` 与 `npm run dev`。
 
@@ -56,8 +54,8 @@ Worker 回归测试用替代推理函数检查默认批大小下的普通导入�
 | `src/embedding.worker.js` | Transformers.js 3.8.1 本地推理、显式后端、模型复用、降级 |
 | `src/main.js` | 导入、查询、会话选择、可运行评测及指标采集 |
 | `src/corpus.js` | 固定语料与查询标注 |
-| `server.mjs` | seekdb-js 1.4.0，集合、upsert、refresh_index、hybridSearch |
-| `scripts/download_model.py` | 固定模型 revision 下载与 SHA-256 / 字节体积记录 |
+| `server.mjs` | seekdb-js 1.4.0，集合、upsert、refresh_index、hybridSearch；直接分发 `public/models` |
+| `scripts/ensure_ready.mjs` | 固定模型 revision 下载、SHA-256 逐文件校验、缺失时构建前端 |
 | `public/model-manifest.json` | 模型来源、版本、各文件的实测大小与校验值 |
 
 模型来自 [Xenova/all-MiniLM-L6-v2](https://huggingface.co/Xenova/all-MiniLM-L6-v2/tree/751bff37182d3f1213fa05d7196b954e230abad9)，Apache-2.0。直接选用上游预转换的 FP32、FP16、8 位量化 ONNX 版本；下载脚本固定全部文件版本，运行时通过 `dtype` 选择，不在浏览器中临时量化。数据库接口依据 [seekdb-js 官方源码](https://github.com/oceanbase/seekdb-js)，浏览器模型执行方式依据 [Transformers.js 官方说明](https://huggingface.co/docs/transformers.js/v3.0.0/en/index)。应用、评测语料与脚本由本项目编写。
